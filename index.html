@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dream Exam Portal</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        h1 {
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+        p {
+            color: #7f8c8d;
+            margin-bottom: 2rem;
+        }
+        .quiz-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .quiz-item {
+            margin-bottom: 1rem;
+        }
+        .quiz-link {
+            display: block;
+            padding: 1rem;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background 0.2s ease, transform 0.1s ease;
+        }
+        .quiz-link:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        .quiz-link:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Dream Exam Portal</h1>
+        <p>Select an exam below to begin your test.</p>
+        
+        <ul class="quiz-list">
+            <li class="quiz-item">
+                <a class="quiz-link" href="./Dream-Exam-1/index.html">Start Dream Exam 1</a>
+            </li>
+            <li class="quiz-item">
+                <a class="quiz-link" href="./Dream-Exam-2/index.html">Start Dream Exam 2</a>
+            </li>
+        </ul>
+    </div>
+
+</body>
+</html>
