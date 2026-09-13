@@ -1,17 +1,16 @@
 <!DOCTYPE html>
-<html lang="ar" dir="ltr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dream Exam Portal</title>
+    <title>Bayyina To Bayna Institute | Exam Portal</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #062c22;
-            /* Using a subtle, elegant geometric repeating pattern overlay */
+            background-color: #1e112c; /* Rich dark purple to match logo core */
             background-image: radial-gradient(rgba(212, 175, 55, 0.15) 1px, transparent 0),
-                              linear-gradient(to right, rgba(212, 175, 55, 0.05) 1px, transparent 1px),
-                              linear-gradient(to bottom, rgba(212, 175, 55, 0.05) 1px, transparent 1px);
+                              linear-gradient(to right, rgba(212, 175, 55, 0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(212, 175, 55, 0.03) 1px, transparent 1px);
             background-size: 24px 24px, 48px 48px, 48px 48px;
             color: #ffffff;
             display: flex;
@@ -19,44 +18,48 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
+            padding: 20px 0;
+            box-sizing: border-box;
         }
         .container {
-            background: linear-gradient(145deg, #093a2f, #05231b);
+            background: linear-gradient(145deg, #321947, #1e0e2b); /* Premium dark purple gradient */
             padding: 3rem 2.5rem;
-            border-radius: 20px;
-            border: 2px solid #d4af37; /* Warm Gold Border */
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            border-radius: 24px;
+            border: 2px solid #d4af37; /* Royal Gold Border */
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
             text-align: center;
             max-width: 440px;
             width: 90%;
             position: relative;
-            overflow: hidden;
         }
-        /* Top decorative classic arch banner element */
-        .container::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 10px;
-            background: #d4af37;
-            border-radius: 0 0 10px 10px;
+        .logo-container {
+            margin-bottom: 1.5rem;
+        }
+        .logo-img {
+            max-width: 160px;
+            height: auto;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
         }
         h1 {
             margin-top: 0;
-            margin-bottom: 0.75rem;
-            color: #d4af37; /* Luxury Gold */
-            font-size: 2.2rem;
+            margin-bottom: 0.25rem;
+            color: #ffffff;
+            font-size: 1.8rem;
             font-weight: 700;
+        }
+        .subtitle {
+            color: #d4af37; /* Gold Accent Name */
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
             letter-spacing: 0.5px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
         p {
             color: #cbd5e1;
             margin-bottom: 2.5rem;
-            font-size: 1.05rem;
+            font-size: 1rem;
             line-height: 1.5;
         }
         .quiz-list {
@@ -80,10 +83,9 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
         }
-        /* Interactive hovering state with classic gold transition */
         .quiz-link:hover {
             background-color: #d4af37;
-            color: #062c22;
+            color: #1e112c;
             transform: translateY(-3px);
             box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
         }
@@ -93,14 +95,20 @@
         .footer-logo {
             margin-top: 2rem;
             font-size: 1.5rem;
-            color: rgba(212, 175, 55, 0.4);
+            color: rgba(212, 175, 55, 0.3);
         }
     </style>
 </head>
 <body>
 
     <div class="container">
+        <!-- Logo block linked to your uploaded image -->
+        <div class="logo-container">
+            <img class="logo-img" src="./logo.png" alt="Bayyina To Bayna Institute Logo">
+        </div>
+
         <h1>Dream Exam Portal</h1>
+        <div class="subtitle">Bayyina To Bayna Institute</div>
         <p>Select an exam below to begin testing your language skills.</p>
         
         <ul class="quiz-list">
