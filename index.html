@@ -1,14 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dream Exam Portal</title>
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: #f4f7f6;
-            color: #333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #062c22;
+            /* Using a subtle, elegant geometric repeating pattern overlay */
+            background-image: radial-gradient(rgba(212, 175, 55, 0.15) 1px, transparent 0),
+                              linear-gradient(to right, rgba(212, 175, 55, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(212, 175, 55, 0.05) 1px, transparent 1px);
+            background-size: 24px 24px, 48px 48px, 48px 48px;
+            color: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -16,21 +21,43 @@
             margin: 0;
         }
         .container {
-            background: white;
-            padding: 2.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            background: linear-gradient(145deg, #093a2f, #05231b);
+            padding: 3rem 2.5rem;
+            border-radius: 20px;
+            border: 2px solid #d4af37; /* Warm Gold Border */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
             text-align: center;
-            max-width: 400px;
+            max-width: 440px;
             width: 90%;
+            position: relative;
+            overflow: hidden;
+        }
+        /* Top decorative classic arch banner element */
+        .container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 10px;
+            background: #d4af37;
+            border-radius: 0 0 10px 10px;
         }
         h1 {
-            margin-bottom: 0.5rem;
-            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 0.75rem;
+            color: #d4af37; /* Luxury Gold */
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
         p {
-            color: #7f8c8d;
-            margin-bottom: 2rem;
+            color: #cbd5e1;
+            margin-bottom: 2.5rem;
+            font-size: 1.05rem;
+            line-height: 1.5;
         }
         .quiz-list {
             list-style: none;
@@ -38,24 +65,35 @@
             margin: 0;
         }
         .quiz-item {
-            margin-bottom: 1rem;
+            margin-bottom: 1.25rem;
         }
         .quiz-link {
             display: block;
-            padding: 1rem;
-            background-color: #3498db;
-            color: white;
+            padding: 1.1rem;
+            background: transparent;
+            color: #d4af37;
             text-decoration: none;
-            border-radius: 8px;
+            border-radius: 12px;
             font-weight: 600;
-            transition: background 0.2s ease, transform 0.1s ease;
+            font-size: 1.1rem;
+            border: 1.5px solid #d4af37;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
         }
+        /* Interactive hovering state with classic gold transition */
         .quiz-link:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
+            background-color: #d4af37;
+            color: #062c22;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
         }
         .quiz-link:active {
-            transform: translateY(0);
+            transform: translateY(-1px);
+        }
+        .footer-logo {
+            margin-top: 2rem;
+            font-size: 1.5rem;
+            color: rgba(212, 175, 55, 0.4);
         }
     </style>
 </head>
@@ -63,7 +101,7 @@
 
     <div class="container">
         <h1>Dream Exam Portal</h1>
-        <p>Select an exam below to begin your test.</p>
+        <p>Select an exam below to begin testing your language skills.</p>
         
         <ul class="quiz-list">
             <li class="quiz-item">
@@ -73,6 +111,8 @@
                 <a class="quiz-link" href="./Dream-Exam-2/index.html">Start Dream Exam 2</a>
             </li>
         </ul>
+        
+        <div class="footer-logo">❊</div>
     </div>
 
 </body>
