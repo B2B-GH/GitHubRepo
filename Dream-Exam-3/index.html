@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dream Series Quiz #3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #EFE8D6; --paper-raised: #F7F2E4; --ink: #1B2A3A; --ink-soft: #4A5568;
+    --rule: #C9BC9C; --leather: #8C5A2B; --leather-deep: #6E4420;
+    --good: #3E6B52; --good-bg: #E3EBE1; --bad: #9A3B32; --bad-bg: #F1E2DE;
+    --neutral-bg: #EAE3D0;
+    --arabic: 'Scheherazade New', 'Amiri', serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--paper);
+    background-image: radial-gradient(ellipse at top left, rgba(140,90,43,0.06), transparent 45%),
+      radial-gradient(ellipse at bottom right, rgba(140,90,43,0.05), transparent 50%);
+    color: var(--ink); font-family: 'Spectral', serif; line-height: 1.55; padding: 0 0 110px 0;
+  }
+  .wrap{ max-width: 740px; margin: 0 auto; padding: 48px 24px 24px; }
+  header.masthead{ text-align: left; border-bottom: 3px double var(--leather); padding-bottom: 22px; margin-bottom: 24px; }
+  header.masthead h1{ font-family: 'Amiri', serif; font-weight: 700; font-size: 2rem; margin: 0 0 6px 0; }
+  header.masthead p.sub{ margin: 0; color: var(--ink-soft); font-style: italic; font-size: 1.02rem; }
+  .name-row{ margin-top: 22px; display:flex; align-items:baseline; gap:10px; flex-wrap: wrap; }
+  .name-row label{ font-size: 0.95rem; color: var(--ink-soft); }
+  .name-row input{
+    flex: 1; min-width: 200px; background: transparent; border: none; border-bottom: 1.5px solid var(--rule);
+    font-family: 'Spectral', serif; font-size: 1.05rem; padding: 4px 2px; color: var(--ink);
+  }
+  .name-row input:focus{ outline: none; border-bottom-color: var(--leather); }
+
+  .timer-bar{
+    position: sticky; top: 0; z-index: 10; display: flex; align-items: baseline; justify-content: center; gap: 10px;
+    background: var(--paper-raised); border: 1.5px solid var(--leather); border-radius: 4px; padding: 8px 16px; margin-top: 18px;
+  }
+  .wrap.submitted .timer-bar{ display: none; }
+  .timer-label{ font-size: 0.85rem; color: var(--ink-soft); font-style: italic; }
+  .timer-clock{ font-family: 'Amiri', serif; font-weight: 700; font-size: 1.3rem; color: var(--leather-deep); letter-spacing: 0.5px; }
+  .timer-bar.low .timer-clock{ color: var(--bad); }
+  .timer-bar.low{ border-color: var(--bad); animation: pulse 1s infinite; }
+  @keyframes pulse{ 0%,100%{ opacity: 1; } 50%{ opacity: 0.65; } }
+
+  .progress-wrap{ margin-top: 14px; }
+  .wrap.submitted .progress-wrap{ display: none; }
+  .progress-meta{ display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--ink-soft); margin-bottom: 6px; }
+  .progress-track{ width: 100%; height: 9px; background: var(--rule); border-radius: 5px; overflow: hidden; }
+  .progress-fill{ height: 100%; background: var(--leather); width: 0%; border-radius: 5px; transition: width 0.35s ease; }
+
+  .section-title{ font-family: 'Amiri', serif; font-size: 1.3rem; font-weight: 700; margin: 30px 0 4px 0; color: var(--leather-deep); }
+  .section-instructions{ font-size: 0.92rem; color: var(--ink-soft); margin: 0 0 14px 0; font-style: italic; }
+
+  .quiz-section{ display: none; }
+  .quiz-section.active{ display: block; }
+  .q{ display: none; padding: 8px 4px 4px; }
+  .q.active-step{ display: block; animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn{ from{ opacity: 0; transform: translateY(4px); } to{ opacity: 1; transform: translateY(0); } }
+
+  .q-card{ background: var(--paper-raised); border: 1px solid var(--rule); border-radius: 6px; padding: 22px 22px 18px; }
+  .q-num{ font-family: 'Amiri', serif; font-weight: 700; color: var(--leather); font-size: 1.05rem; margin-bottom: 8px; }
+  .q-body{ min-width: 0; }
+  .q-text{ font-size: 1.08rem; margin: 0 0 16px 0; }
+  .q-text .ar{ font-family: var(--arabic); font-size: 1.35rem; line-height: 1.9; }
+  .choices{ display: flex; gap: 22px; flex-wrap: wrap; }
+  .choice{
+    display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 1.02rem;
+    border: 1.5px solid var(--rule); border-radius: 5px; padding: 10px 16px; background: var(--paper);
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .choice:hover{ border-color: var(--leather); }
+  .choice input{ accent-color: var(--leather); width: 17px; height: 17px; cursor: pointer; }
+  .choice.picked{ border-color: var(--leather); background: #EFE2CC; }
+
+  .verdict{ display: none; margin-top: 14px; font-size: 0.9rem; padding: 8px 11px; border-radius: 3px; }
+  .q.correct .q-card{ background: var(--good-bg); }
+  .q.incorrect .q-card{ background: var(--bad-bg); }
+  .q.correct .verdict{ display: block; color: var(--good); }
+  .q.incorrect .verdict{ display: block; color: var(--bad); }
+  .q.unanswered .verdict{ display: block; color: var(--bad); }
+  .q.selfcheck .q-card{ background: var(--neutral-bg); }
+  .q.selfcheck .verdict{ display: block; color: var(--ink-soft); }
+
+  .sentence-block .ar-full{
+    font-family: var(--arabic); font-size: 1.65rem; direction: rtl; text-align: right;
+    padding: 12px 16px; background: var(--paper); border: 1px solid var(--rule); border-radius: 4px; margin-bottom: 14px;
+  }
+  .segment-row{ display: flex; align-items: center; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+  .segment-row .seg-ar{ font-family: var(--arabic); font-size: 1.3rem; min-width: 110px; direction: rtl; text-align: right; }
+  .segment-row select{
+    font-family: 'Spectral', serif; font-size: 0.93rem; padding: 6px 8px;
+    border: 1.5px solid var(--rule); border-radius: 4px; background: var(--paper); color: var(--ink);
+  }
+  .segment-row select:focus{ outline: none; border-color: var(--leather); }
+  .hidden-faail-row{
+    margin-top: 14px; padding: 12px 14px; background: var(--paper); border: 1px dashed var(--leather);
+    border-radius: 4px;
+  }
+  .hidden-faail-row label{ font-size: 0.92rem; display: block; margin-bottom: 6px; color: var(--leather-deep); }
+  .hidden-faail-row input{
+    width: 100%; max-width: 300px; font-family: 'Spectral', serif; font-size: 1rem;
+    padding: 8px 10px; border: 1.5px solid var(--rule); border-radius: 4px; background: var(--paper-raised);
+  }
+  .hidden-faail-row input:focus{ outline: none; border-color: var(--leather); }
+  .legend{
+    font-size: 0.85rem; color: var(--ink-soft); background: var(--paper-raised);
+    border: 1px solid var(--rule); border-radius: 3px; padding: 12px 14px; margin-bottom: 6px;
+    display: grid; grid-template-columns: 1fr; gap: 3px;
+  }
+  .legend b{ color: var(--leather-deep); }
+
+  .selfcheck-textarea{
+    width: 100%; min-height: 90px; font-family: 'Spectral', serif; font-size: 0.98rem;
+    padding: 10px 12px; border: 1.5px solid var(--rule); border-radius: 4px; background: var(--paper); resize: vertical;
+  }
+  .selfcheck-textarea:focus{ outline: none; border-color: var(--leather); }
+  .model-answer{
+    display: none; margin-top: 14px; font-size: 0.9rem; background: var(--paper); border-left: 3px solid var(--leather);
+    padding: 10px 12px; border-radius: 2px;
+  }
+  .model-answer .ma-line{ margin: 3px 0; }
+  .q.revealed .model-answer{ display: block; }
+  .selfcheck-hint{ font-size: 0.82rem; color: var(--ink-soft); margin-top: 6px; font-style: italic; }
+
+  .tag-segment{
+    margin-bottom: 16px; padding: 12px 14px; background: var(--paper); border: 1px solid var(--rule); border-radius: 4px;
+  }
+  .tag-segment-label{
+    font-weight: 600; margin-bottom: 8px; color: var(--leather-deep);
+    font-family: var(--arabic); font-size: 1.35rem; direction: rtl; text-align: right;
+  }
+  .tag-options{ display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag-pill{
+    display: inline-flex; align-items: center; justify-content: center; gap: 4px; cursor: pointer;
+    font-family: 'Spectral', serif; font-weight: 600; font-size: 0.92rem;
+    border: 1.5px solid var(--rule); border-radius: 5px; padding: 6px 11px; background: var(--paper-raised);
+    transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+  }
+  .tag-pill:hover{ border-color: var(--leather); }
+  .tag-pill input{ display: none; }
+  .tag-pill:has(input:checked), .tag-pill.picked{
+    background: var(--leather); border-color: var(--leather); color: var(--paper-raised);
+  }
+
+  .nav-bar{
+    position: sticky; bottom: 0; background: var(--paper); border-top: 2px solid var(--leather);
+    padding: 14px 24px; margin-top: 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .wrap.submitted .nav-bar{ display: none; }
+  .nav-btn{
+    font-family: 'Spectral', serif; font-size: 0.98rem; padding: 10px 22px; border-radius: 3px; cursor: pointer;
+    border: 1.5px solid var(--leather);
+  }
+  .nav-btn.next{ background: var(--leather); color: var(--paper-raised); border: none; }
+  .nav-btn.next:hover{ background: var(--leather-deep); }
+  .nav-btn.back{ background: transparent; color: var(--leather-deep); }
+  .nav-btn.back:hover{ background: rgba(140,90,43,0.08); }
+  .nav-btn:disabled{ opacity: 0.4; cursor: not-allowed; }
+  .nav-count{ font-size: 0.88rem; color: var(--ink-soft); text-align: center; }
+
+  .score-card{
+    display: none; background: var(--paper-raised); border: 1.5px solid var(--leather); border-radius: 6px;
+    padding: 30px 28px; margin-bottom: 34px; text-align: left;
+  }
+  .wrap.submitted .score-card{ display: block; }
+  .score-top{ display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 6px; }
+  .grade-badge{
+    font-family: 'Amiri', serif; font-weight: 700; font-size: 2.4rem; color: var(--paper-raised);
+    background: var(--leather); border-radius: 50%; width: 84px; height: 84px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 3px solid var(--leather-deep);
+  }
+  .score-headline h2{ font-family: 'Amiri', serif; margin: 0 0 4px 0; font-size: 1.5rem; }
+  .score-headline .big{ font-size: 1.9rem; font-weight: 700; color: var(--leather); font-family: 'Amiri', serif; }
+  .grade-comment{
+    margin-top: 14px; font-size: 0.98rem; background: var(--paper); border-left: 3px solid var(--leather);
+    padding: 10px 14px; border-radius: 2px; font-style: italic;
+  }
+  .breakdown{ margin-top: 14px; font-size: 0.95rem; color: var(--ink-soft); }
+  .result-actions{ margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .print-btn{
+    background: transparent; border: 1.5px solid var(--leather); color: var(--leather-deep);
+    font-family: 'Spectral', serif; padding: 9px 18px; border-radius: 3px; cursor: pointer; font-size: 0.92rem;
+  }
+  .print-btn:hover{ background: rgba(140,90,43,0.08); }
+  .sent-note{ margin-top: 14px; font-style: italic; font-size: 0.9rem; color: var(--ink-soft); }
+
+  /* Access window gate */
+  #accessGate{ display: none; }
+  .wrap.gate-locked #accessGate{ display: block; }
+  .wrap.gate-locked .timer-bar,
+  .wrap.gate-locked .progress-wrap,
+  .wrap.gate-locked .nav-bar,
+  .wrap.gate-locked .quiz-section,
+  .wrap.gate-locked .score-card{ display: none !important; }
+  .gate-card{
+    background: var(--paper-raised); border: 1.5px solid var(--leather); border-radius: 6px;
+    padding: 36px 30px; text-align: center; margin-top: 10px;
+  }
+  .gate-card h2{ font-family: 'Amiri', serif; font-size: 1.5rem; margin: 0 0 10px 0; color: var(--leather-deep); }
+  .gate-card p{ margin: 6px 0; font-size: 1.02rem; }
+  .gate-countdown{
+    font-family: 'Amiri', serif; font-weight: 700; font-size: 1.8rem; color: var(--leather);
+    margin-top: 14px; letter-spacing: 0.5px;
+  }
+
+  .window-banner{
+    font-weight: 700; font-size: 0.98rem; text-align: center; color: var(--leather-deep);
+    background: var(--paper-raised); border: 1.5px solid var(--leather); border-radius: 4px;
+    padding: 10px 16px; margin-top: 18px;
+  }
+  .wrap.submitted .window-banner{ display: none; }
+  .wrap.submitted .quiz-section{ display: none !important; }
+  .timer-bar{ flex-wrap: wrap; row-gap: 4px; }
+  #timerCloseNote{ width: 100%; text-align: center; font-size: 0.8rem; }
+
+  /* Review overlay */
+  .review-overlay{
+    display: none; position: fixed; inset: 0; background: rgba(27,42,58,0.55);
+    z-index: 100; align-items: center; justify-content: center; padding: 20px;
+  }
+  .review-overlay.open{ display: flex; }
+  .review-panel{
+    background: var(--paper); border: 2px solid var(--leather); border-radius: 8px;
+    padding: 26px 26px 22px; max-width: 480px; width: 100%; max-height: 85vh; overflow-y: auto;
+  }
+  .review-panel h2{ font-family: 'Amiri', serif; font-size: 1.35rem; margin: 0 0 6px 0; color: var(--leather-deep); }
+  .review-panel p{ margin: 0 0 16px 0; font-size: 0.95rem; color: var(--ink-soft); }
+  .review-grid{
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 8px; margin-bottom: 16px;
+  }
+  .review-cell{
+    aspect-ratio: 1; border-radius: 5px; display: flex; align-items: center; justify-content: center;
+    font-family: 'Spectral', serif; font-weight: 600; font-size: 0.9rem; cursor: pointer; border: none;
+    color: var(--paper-raised); transition: transform 0.15s ease;
+  }
+  .review-cell:hover{ transform: scale(1.08); }
+  .review-cell.answered{ background: var(--good); }
+  .review-cell.unanswered{ background: var(--bad); }
+  .review-legend{ display: flex; gap: 18px; font-size: 0.85rem; color: var(--ink-soft); margin-bottom: 20px; align-items: center; }
+  .legend-dot{ display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: middle; }
+  .legend-dot.answered{ background: var(--good); }
+  .legend-dot.unanswered{ background: var(--bad); }
+  .review-actions{ display: flex; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
+  .status-link{
+    font-family: 'Spectral', serif; background: transparent; border: none; cursor: pointer;
+    color: var(--leather-deep); font-size: 0.88rem; text-align: center; text-decoration: underline;
+    text-underline-offset: 3px; padding: 4px 6px;
+  }
+  .status-link:hover{ color: var(--leather); }
+
+  @media print{
+    .timer-bar, .progress-wrap, .nav-bar, .quiz-section, .print-btn{ display: none !important; }
+    body{ background: white; padding: 0; }
+    .score-card{ display: block !important; border: none; }
+  }
+  @media (max-width: 480px){
+    .wrap{ padding: 32px 16px 20px; }
+    header.masthead h1{ font-size: 1.5rem; }
+    .q-card{ padding: 16px; }
+    .segment-row{ flex-direction: column; align-items: flex-start; }
+    .grade-badge{ width: 68px; height: 68px; font-size: 1.9rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap" id="wrap">
+  <div class="wrap-inner">
+    <header class="masthead">
+      <h1>Dream Series Quiz #3</h1>
+      <p class="sub">Fi'l, Faa'il, Maf'ool, and full sentence analysis — 25 items</p>
+      <div class="name-row">
+        <label for="studentName">Name: <span style="color:var(--bad);">*</span></label>
+        <input type="text" id="studentName" placeholder="type your name here" required>
+      </div>
+    </header>
+
+    <div class="window-banner" id="windowBanner"></div>
+
+    <div class="gate-card" id="accessGate">
+      <h2 id="gateHeading">This exam is not open yet</h2>
+      <p id="gateSub"></p>
+      <div class="gate-countdown" id="gateCountdown"></div>
+    </div>
+
+    <div class="timer-bar" id="timerBar">
+      <span class="timer-label">Time remaining</span>
+      <span class="timer-clock" id="timerClock">25:00</span>
+      <span class="timer-label" id="timerCloseNote"></span>
+    </div>
+
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-meta">
+        <span id="progressQuestionLabel">Question 1 of 25</span>
+        <span id="progressPercentLabel">0%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <div class="score-card" id="scoreCard">
+      <div class="score-top">
+        <div class="grade-badge" id="gradeBadge">–</div>
+        <div class="score-headline">
+          <h2 id="scoreGreeting">Result</h2>
+          <div class="big" id="scoreBig">0 / 20</div>
+        </div>
+      </div>
+      <div class="grade-comment" id="gradeComment"></div>
+      <div class="breakdown" id="scoreBreakdown"></div>
+      <div class="result-actions">
+        <button class="print-btn" id="printBtn">Print / Save as PDF</button>
+      </div>
+      <div class="sent-note">Your result has also been sent to your teacher.</div>
+    </div>
+
+    <div class="quiz-section" data-section="1">
+      <div class="section-title">Section 1 — Beyond The Fundamentals</div>
+      <p class="section-instructions">Mark each statement as True or False.</p>
+      <div id="section1"></div>
+    </div>
+
+    <div class="quiz-section" data-section="2">
+      <div class="section-title">Section 2 — Fi'l, Faa'il &amp; Maf'ool</div>
+      <p class="section-instructions">Tag each part of the sentence. If the Faa'il is hidden inside the verb rather than a separate word, name it in the box provided instead.</p>
+      <div id="section2"></div>
+    </div>
+
+    <div class="quiz-section" data-section="3">
+      <div class="section-title">Section 3 — Full Sentence Analysis</div>
+      <p class="section-instructions">Each sentence is broken into chunks. Tap every letter that applies to each chunk — some chunks need more than one.</p>
+      <div class="legend" id="s3legend"></div>
+      <div id="section3"></div>
+    </div>
+  </div>
+
+  <div class="nav-bar" id="navBar">
+    <button class="nav-btn back" id="backBtn">Back</button>
+    <div class="nav-count"><button class="status-link" id="statusLink" type="button">Question 1 / 25 · Answer Status</button></div>
+    <button class="nav-btn next" id="nextBtn">Next</button>
+  </div>
+</div>
+
+<div class="review-overlay" id="reviewOverlay">
+  <div class="review-panel">
+    <h2>Review your answers</h2>
+    <p id="reviewSummary"></p>
+    <div class="review-grid" id="reviewGrid"></div>
+    <div class="review-legend">
+      <span class="legend-dot answered"></span> Answered
+      <span class="legend-dot unanswered"></span> Not answered
+    </div>
+    <div class="review-actions">
+      <button class="nav-btn back" id="reviewBackBtn">Go back &amp; review</button>
+      <button class="nav-btn next" id="reviewSubmitBtn">Submit Final Answers</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===================== DATA =====================
+
+// ---- Section 1: True/False ----
+const section1 = [
+  {text:'<span class="ar">أَبٌ أَخٌ</span> are examples of ISMS that get an added <span class="ar">و</span> for RAF\' status if they are light, turning into <span class="ar">أَبُوْ أَخُوْ</span>.', answer:"A"},
+  {text:"Comparatives are partly flexible and putting AL on them makes them (A) fully flexible and (B) superlative.", answer:"A"},
+  {text:'Whenever you see <span class="ar">كَانَ</span> or <span class="ar">لَيْسَ</span>, you are looking at a <span class="ar">جملة اسمية</span>.', answer:"A"},
+  {text:'A <span class="ar">جملة فعلية</span> has up to four components.', answer:"A"},
+  {text:'A <span class="ar">جار مجرور</span> can be a <span class="ar">زائدة</span>, <span class="ar">صفة</span>, <span class="ar">متعلق بالفعل</span>, or even <span class="ar">متعلق بالخبر</span>.', answer:"A"},
+  {text:'There are three kinds of <span class="ar">فاعل</span>: inside, outside and <span class="ar">متعلق بالفعل</span>.', answer:"B"},
+  {text:'<span class="ar">المُسْلِمُ نَصَرَ</span> is a JUMLAH ISMIYYAH with a JUMLAH FI\'LIYYAH inside it.', answer:"A"},
+  {text:'<span class="ar">نَصَرَ المُسْلِمَ</span> is a JUMLAH ISMIYYAH with a JUMLAH FI\'LIYYAH inside it.', answer:"B"},
+  {text:'<span class="ar">قَالُوْا اللهُ أَكْبَرُ</span> is a JUMLAH FI\'LIYYAH with a JUMLAH ISMIYYAH inside it.', answer:"A"},
+  {text:'<span class="ar">متعلق بالخبر</span> has a <span class="ar">المُؤْمِنُوْنَ يُؤْمِنُوْنَ بِالْغَيْبِ</span>.', answer:"B"}
+];
+
+// ---- Section 2: Fi'l / Faa'il / Maf'ool tagging ----
+// tag values: FEIL, FAAIL, MAFOOL, MAF1, MAF2, MBF, NONE
+const tagLabelsS2 = {
+  "FEIL": "Fi'l (verb)",
+  "FAAIL": "Faa'il — outside/visible subject",
+  "MAFOOL": "Maf'ool (object)",
+  "MAF1": "Maf'ool 1",
+  "MAF2": "Maf'ool 2",
+  "MBF": "Muta'alliq bil Fi'l (MBF)",
+  "NONE": "particle / not tagged"
+};
+
+const section2 = [
+  { full: 'قَاتَلَهُمُ اللَّهُ',
+    segments: [ {ar:'قَاتَلَ', answer:'FEIL'}, {ar:'ـهُمُ', answer:'MAFOOL'}, {ar:'اللَّهُ', answer:'FAAIL'} ],
+    hiddenFaail: null },
+  { full: 'نَشْهَدُ إِنَّكَ لَرَسُولُ اللَّهِ',
+    segments: [ {ar:'نَشْهَدُ', answer:'FEIL'}, {ar:'إِنَّكَ لَرَسُولُ اللَّهِ', answer:'MAFOOL'} ],
+    hiddenFaail: {expected:'We', display:"Nahnu (We)"} },
+  { full: 'اتَّخَذُوا أَيْمَانَهُمْ جُنَّةً',
+    segments: [ {ar:'اتَّخَذُوا', answer:'FEIL'}, {ar:'أَيْمَانَهُمْ', answer:'MAF1'}, {ar:'جُنَّةً', answer:'MAF2'} ],
+    hiddenFaail: {expected:'They', display:"Hum (They)"} },
+  { full: 'بَعَثَ فِي الْأُمِّيِّينَ رَسُولًا',
+    segments: [ {ar:'بَعَثَ', answer:'FEIL'}, {ar:'فِي الْأُمِّيِّينَ', answer:'MBF'}, {ar:'رَسُولًا', answer:'MAFOOL'} ],
+    hiddenFaail: {expected:'He', display:"Huwa (He)"} },
+  { full: 'يُعَلِّمُهُمُ الْكِتَابَ وَالْحِكْمَةَ',
+    segments: [ {ar:'يُعَلِّمُ', answer:'FEIL'}, {ar:'ـهُمُ', answer:'MAF1'}, {ar:'الْكِتَابَ وَالْحِكْمَةَ', answer:'MAF2'} ],
+    hiddenFaail: {expected:'He', display:"Huwa (He)"} },
+  { full: 'لَمَّا يَلْحَقُوا بِهِمْ',
+    segments: [ {ar:'لَمَّا', answer:'NONE'}, {ar:'يَلْحَقُوا', answer:'FEIL'}, {ar:'بِهِمْ', answer:'MBF'} ],
+    hiddenFaail: {expected:'They', display:"Hum (They)"} },
+  { full: 'صَدُّوا عَن سَبِيلِ اللَّهِ',
+    segments: [ {ar:'صَدُّوا', answer:'FEIL'}, {ar:'عَن سَبِيلِ اللَّهِ', answer:'MBF'} ],
+    hiddenFaail: {expected:'They', display:"Hum (They)"} },
+  { full: 'تُعْجِبُكَ أَجْسَامُهُمْ',
+    segments: [ {ar:'تُعْجِبُ', answer:'FEIL'}, {ar:'ـكَ', answer:'MAFOOL'}, {ar:'أَجْسَامُهُمْ', answer:'FAAIL'} ],
+    hiddenFaail: null },
+  { full: 'يَحْسَبُونَ كُلَّ صَيْحَةٍ عَلَيْهِمْ',
+    segments: [ {ar:'يَحْسَبُونَ', answer:'FEIL'}, {ar:'كُلَّ صَيْحَةٍ', answer:'MAFOOL'}, {ar:'عَلَيْهِمْ', answer:'MBF'} ],
+    hiddenFaail: {expected:'They', display:"Hum (They)"} },
+  { full: 'وَلَن يُؤَخِّرَ اللَّهُ نَفْسًا',
+    segments: [ {ar:'لَن', answer:'NONE'}, {ar:'يُؤَخِّرَ', answer:'FEIL'}, {ar:'اللَّهُ', answer:'FAAIL'}, {ar:'نَفْسًا', answer:'MAFOOL'} ],
+    hiddenFaail: null }
+];
+
+// ---- Section 3: full sentence analysis — tag each chunk with one or more letters ----
+const tagLabels3 = {
+  A: "A — Mubtada", B: "B — Khabar", C: "C — MBK", D: "D — Fi'l", E: "E — Faa'il",
+  F: "F — Maf'ool", G: "G — MBF", H: "H — Mowsoof Sifah", I: "I — Idafah",
+  J: "J — Ismul Ishara / Mushar Ilaih", K: "K — Special Mudaf of Time/Place",
+  L: "L — Fi Mahalli ___", M: "M — Muqaddam"
+};
+const s3Legend = [
+  "A = MUBTADA", "B = KHABAR", "C = MBK", "D = FI'L", "E = FAA'IL", "F = MAF'OOL",
+  "G = MBF", "H = MOWSOOF SIFAH", "I = IDAFAH", "J = ISMUL ISHARA / MUSHAR ILAIH",
+  "K = SPECIAL MUDAF OF TIME AND PLACE", "L = FI MAHALLI ___", "M = MUQADDAM"
+];
+
+const section3 = [
+  { full: 'وَكَانَ اللَّهُ غَفُورًا رَحِيمًا',
+    segments: [
+      {label:'كَانَ اللَّهُ', answer:['A']},
+      {label:'غَفُورًا', answer:['B']},
+      {label:'رَحِيمًا', answer:['B']}
+    ] },
+  { full: 'إِذَا جَاءَكَ الْمُنَافِقُونَ قَالُوا نَشْهَدُ إِنَّكَ لَرَسُولُ اللَّهِ',
+    segments: [
+      {label:'إِذَا', answer:['K']},
+      {label:'جَاءَ', answer:['D']},
+      {label:'كَ', answer:['F']},
+      {label:'إِذَا جَاءَكَ', answer:['I','L']},
+      {label:'الْمُنَافِقُونَ', answer:['E']},
+      {label:'قَالُوا', answer:['D','E']},
+      {label:'نَشْهَدُ إِنَّكَ لَرَسُولُ اللَّهِ', answer:['F','L']},
+      {label:'نَشْهَدُ', answer:['D','E']},
+      {label:'إِنَّكَ لَرَسُولُ اللَّهِ', answer:['F','L']},
+      {label:'إِنَّكَ', answer:['A']},
+      {label:'لَرَسُولُ اللَّهِ', answer:['B','I']}
+    ] },
+  { full: 'أَلَيْسَ اللَّهُ بِأَحْكَمِ الْحَاكِمِينَ',
+    segments: [
+      {label:'لَيْسَ', answer:['D']},
+      {label:'أَلَيْسَ اللَّهُ', answer:['A']},
+      {label:'بِأَحْكَمِ الْحَاكِمِينَ', answer:['B']},
+      {label:'أَحْكَمِ الْحَاكِمِينَ', answer:['I','L']}
+    ] },
+  { full: 'إِنَّهُ كَانَ لَا يُؤْمِنُ بِاللَّهِ الْعَظِيمِ',
+    segments: [
+      {label:'إِنَّهُ', answer:['A']},
+      {label:'كَانَ', answer:['A','D']},
+      {label:'لَا يُؤْمِنُ بِاللَّهِ الْعَظِيمِ', answer:['B','L']},
+      {label:'لَا يُؤْمِنُ', answer:['D','E']},
+      {label:'بِاللَّهِ الْعَظِيمِ', answer:['G']},
+      {label:'اللَّهِ الْعَظِيمِ', answer:['H']}
+    ] },
+  { full: 'فَعَصَوْا رَسُولَ رَبِّهِمْ',
+    segments: [
+      {label:'عَصَوْا', answer:['D','E']},
+      {label:'رَسُولَ رَبِّهِمْ', answer:['F']},
+      {label:'رَسُولَ رَبِّ', answer:['I','F']},
+      {label:'رَبِّهِمْ', answer:['I']}
+    ] }
+];
+
+const S2_COUNT = section2.length;
+const TOTAL_SCORED = section1.length + section2.length + section3.length; // 25
+const TOTAL_STEPS = section1.length + section2.length + section3.length; // 25
+const TIME_LIMIT_SECONDS = TOTAL_STEPS * 60;
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mdeovjqv';
+
+// ============================================================
+// ACCESS WINDOW — edit these two lines to schedule the exam.
+// Time zone is fixed to Asia/Kolkata (IST, UTC+5:30) — the "+05:30"
+// at the end makes that fixed regardless of the student's own device.
+// Format: "YYYY-MM-DDTHH:MM:SS+05:30"  (24-hour clock)
+// ============================================================
+const QUIZ_OPEN_AT  = "2026-09-13T09:00:00+05:30";
+const QUIZ_CLOSE_AT = "2026-09-14T20:00:00+05:30";
+// ============================================================
+
+function sendResultToTeacher(payload){
+  fetch(FORMSPREE_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify(payload)
+  }).catch(err => console.error('Could not send result to teacher:', err));
+}
+
+// ===================== BUILD SECTION 1 =====================
+function buildTF(container, items, prefix){
+  const el = document.getElementById(container);
+  items.forEach((item, i) => {
+    const num = i + 1;
+    const name = prefix + num;
+    const div = document.createElement('div');
+    div.className = 'q';
+    div.dataset.answer = item.answer;
+    div.dataset.name = name;
+    div.dataset.kind = 'choice';
+    div.innerHTML = `
+      <div class="q-card">
+        <div class="q-num">Question ${num}</div>
+        <div class="q-body">
+          <p class="q-text">${item.text}</p>
+          <div class="choices">
+            <label class="choice"><input type="radio" name="${name}" value="A"> True</label>
+            <label class="choice"><input type="radio" name="${name}" value="B"> False</label>
+          </div>
+          <div class="verdict"></div>
+        </div>
+      </div>
+    `;
+    el.appendChild(div);
+  });
+}
+buildTF('section1', section1, 's1q');
+
+// ===================== BUILD SECTION 2 =====================
+function buildS2(container, items, prefix){
+  const el = document.getElementById(container);
+  items.forEach((item, i) => {
+    const num = i + 1;
+    const name = prefix + num;
+    const div = document.createElement('div');
+    div.className = 'q';
+    div.dataset.name = name;
+    div.dataset.kind = 's2';
+    div.dataset.hasHidden = item.hiddenFaail ? '1' : '0';
+    if(item.hiddenFaail) div.dataset.hiddenExpected = item.hiddenFaail.expected;
+
+    let segmentsHtml = '';
+    item.segments.forEach((seg, si) => {
+      const selId = `${name}_seg${si}`;
+      let options = '';
+      Object.keys(tagLabelsS2).forEach(key => { options += `<option value="${key}">${tagLabelsS2[key]}</option>`; });
+      segmentsHtml += `
+        <div class="segment-row" data-answer="${seg.answer}">
+          <span class="seg-ar">${seg.ar}</span>
+          <select id="${selId}">
+            <option value="" selected disabled>choose role…</option>
+            ${options}
+          </select>
+        </div>
+      `;
+    });
+
+    let hiddenHtml = '';
+    if(item.hiddenFaail){
+      hiddenHtml = `
+        <div class="hidden-faail-row">
+          <label for="${name}_hidden">The Faa'il here is hidden inside the verb — name it in English (e.g. He / She / They / We / I / You):</label>
+          <input type="text" id="${name}_hidden" placeholder="e.g. He">
+        </div>
+      `;
+    }
+
+    div.innerHTML = `
+      <div class="q-card">
+        <div class="q-num">Question ${num}</div>
+        <div class="q-body">
+          <div class="sentence-block">
+            <div class="ar-full">${item.full}</div>
+            ${segmentsHtml}
+            ${hiddenHtml}
+          </div>
+          <div class="verdict"></div>
+        </div>
+      </div>
+    `;
+    el.appendChild(div);
+  });
+}
+buildS2('section2', section2, 's2q');
+
+// ===================== BUILD SECTION 3 (multi-tag segments) =====================
+function buildS3(container, items, prefix){
+  const el = document.getElementById(container);
+  items.forEach((item, i) => {
+    const num = i + 1;
+    const name = prefix + num;
+    const div = document.createElement('div');
+    div.className = 'q';
+    div.dataset.name = name;
+    div.dataset.kind = 's3';
+
+    let segmentsHtml = '';
+    item.segments.forEach((seg, si) => {
+      const groupName = `${name}_seg${si}`;
+      let pillsHtml = '';
+      Object.keys(tagLabels3).forEach(letter => {
+        pillsHtml += `<label class="tag-pill"><input type="checkbox" name="${groupName}" value="${letter}">${letter}</label>`;
+      });
+      segmentsHtml += `
+        <div class="tag-segment" data-answer="${seg.answer.slice().sort().join(',')}">
+          <div class="tag-segment-label">${seg.label}</div>
+          <div class="tag-options">${pillsHtml}</div>
+        </div>
+      `;
+    });
+
+    div.innerHTML = `
+      <div class="q-card">
+        <div class="q-num">Question ${num}</div>
+        <div class="q-body">
+          <div class="ar-full">${item.full}</div>
+          <p class="selfcheck-hint">Select every letter that applies to each chunk below — more than one letter is fine where it applies.</p>
+          ${segmentsHtml}
+          <div class="verdict"></div>
+        </div>
+      </div>
+    `;
+    el.appendChild(div);
+  });
+}
+buildS3('section3', section3, 's3q');
+
+// legend
+document.getElementById('s3legend').innerHTML = s3Legend.map(l => `<span><b>${l.split(' = ')[0]}</b> = ${l.split(' = ')[1]}</span>`).join('<br>');
+
+// highlight picked radio choice / tag pills
+document.getElementById('wrap').addEventListener('change', (e) => {
+  if(e.target.matches('input[type="radio"]')){
+    const q = e.target.closest('.q');
+    q.querySelectorAll('.choice').forEach(c => c.classList.remove('picked'));
+    e.target.closest('.choice').classList.add('picked');
+  }
+  if(e.target.matches('.tag-pill input[type="checkbox"]')){
+    const pill = e.target.closest('.tag-pill');
+    pill.classList.toggle('picked', e.target.checked);
+  }
+});
+
+// ===================== STEPPER =====================
+const allQuestions = Array.from(document.querySelectorAll('.q'));
+const quizSections = Array.from(document.querySelectorAll('.quiz-section'));
+let current = 0;
+
+function isChoiceAnswered(q){ return !!q.querySelector('input[type="radio"]:checked'); }
+function isS2Answered(q){
+  const selects = q.querySelectorAll('select');
+  for (const s of selects){ if(!s.value) return false; }
+  if(q.dataset.hasHidden === '1'){
+    const input = q.querySelector('.hidden-faail-row input');
+    if(!input || input.value.trim().length === 0) return false;
+  }
+  return true;
+}
+function isS3Answered(q){
+  const segments = q.querySelectorAll('.tag-segment');
+  for(const seg of segments){
+    if(!seg.querySelector('input[type="checkbox"]:checked')) return false;
+  }
+  return true;
+}
+function countAnswered(){
+  let count = 0;
+  allQuestions.forEach(q => {
+    const kind = q.dataset.kind;
+    if(kind === 'choice' && isChoiceAnswered(q)) count++;
+    else if(kind === 's2' && isS2Answered(q)) count++;
+    else if(kind === 's3' && isS3Answered(q)) count++;
+  });
+  return count;
+}
+function updateProgressBar(){
+  const answered = countAnswered();
+  const pct = Math.round((answered / TOTAL_STEPS) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPercentLabel').textContent = pct + '% answered';
+}
+function renderStep(){
+  allQuestions.forEach((q, i) => q.classList.toggle('active-step', i === current));
+  quizSections.forEach(sec => sec.classList.toggle('active', sec.contains(allQuestions[current])));
+  document.getElementById('backBtn').disabled = current === 0;
+  document.getElementById('nextBtn').textContent = (current === allQuestions.length - 1) ? 'Submit' : 'Next';
+  document.getElementById('statusLink').textContent = 'Question ' + (current + 1) + ' / ' + allQuestions.length + ' · Answer Status';
+  document.getElementById('progressQuestionLabel').textContent = 'Question ' + (current + 1) + ' of ' + allQuestions.length;
+  updateProgressBar();
+}
+document.getElementById('backBtn').addEventListener('click', () => {
+  if(current > 0){ current--; renderStep(); window.scrollTo({top:0, behavior:'smooth'}); }
+});
+document.getElementById('nextBtn').addEventListener('click', () => {
+  const nameVal = document.getElementById('studentName').value.trim();
+  if(!nameVal){
+    alert('Please enter your name before continuing.');
+    document.getElementById('studentName').focus();
+    return;
+  }
+  if(current < allQuestions.length - 1){ current++; renderStep(); window.scrollTo({top:0, behavior:'smooth'}); }
+  else { openReviewOverlay(); }
+});
+document.getElementById('wrap').addEventListener('change', updateProgressBar);
+document.getElementById('wrap').addEventListener('input', updateProgressBar);
+
+// -------- Review grid overlay --------
+function isAnswered(q){
+  const kind = q.dataset.kind;
+  if(kind === 'choice') return isChoiceAnswered(q);
+  if(kind === 's2') return isS2Answered(q);
+  if(kind === 's3') return isS3Answered(q);
+  return false;
+}
+function buildReviewGrid(){
+  const grid = document.getElementById('reviewGrid');
+  grid.innerHTML = '';
+  allQuestions.forEach((q, i) => {
+    const cell = document.createElement('button');
+    cell.className = 'review-cell';
+    cell.type = 'button';
+    cell.textContent = (i + 1);
+    cell.addEventListener('click', () => {
+      current = i;
+      renderStep();
+      closeReviewOverlay();
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+    grid.appendChild(cell);
+  });
+}
+buildReviewGrid();
+
+function openReviewOverlay(){
+  const cells = document.querySelectorAll('.review-cell');
+  let answeredCount = 0;
+  allQuestions.forEach((q, i) => {
+    const answered = isAnswered(q);
+    cells[i].classList.toggle('answered', answered);
+    cells[i].classList.toggle('unanswered', !answered);
+    if(answered) answeredCount++;
+  });
+  const unansweredCount = allQuestions.length - answeredCount;
+  document.getElementById('reviewSummary').textContent = unansweredCount > 0
+    ? (answeredCount + ' of ' + allQuestions.length + ' answered — ' + unansweredCount + ' question' + (unansweredCount === 1 ? '' : 's') + ' still need' + (unansweredCount === 1 ? 's' : '') + ' an answer. Tap a red square to jump straight to it.')
+    : 'All ' + allQuestions.length + ' questions answered. Ready to submit.';
+  document.getElementById('reviewOverlay').classList.add('open');
+}
+function closeReviewOverlay(){
+  document.getElementById('reviewOverlay').classList.remove('open');
+}
+document.getElementById('reviewBackBtn').addEventListener('click', () => {
+  const firstUnanswered = allQuestions.findIndex(q => !isAnswered(q));
+  if(firstUnanswered !== -1){ current = firstUnanswered; renderStep(); }
+  closeReviewOverlay();
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+document.getElementById('reviewSubmitBtn').addEventListener('click', () => {
+  const nameVal = document.getElementById('studentName').value.trim();
+  if(!nameVal){
+    alert('Please enter your name before submitting.');
+    closeReviewOverlay();
+    document.getElementById('studentName').focus();
+    return;
+  }
+  closeReviewOverlay();
+  gradeQuiz(false);
+});
+document.getElementById('statusLink').addEventListener('click', () => openReviewOverlay());
+
+// ===================== GRADE BADGE =====================
+function gradeFor(pct){
+  if(pct >= 90) return {letter:'A+', comment:'Outstanding work — this section is very solid.'};
+  if(pct >= 80) return {letter:'A', comment:'Excellent work overall, with just a few gaps to tidy up.'};
+  if(pct >= 70) return {letter:'B', comment:'Good grasp of the material — a bit more review will sharpen it further.'};
+  if(pct >= 60) return {letter:'C', comment:'A fair attempt — worth going back over the material before the next check.'};
+  if(pct >= 50) return {letter:'D', comment:'Some real gaps here — recommend a focused review session.'};
+  return {letter:'F', comment:'This needs another pass through the material — best to review with your teacher.'};
+}
+
+function normalizeWord(str){ return str.toLowerCase().trim(); }
+
+function stripHtml(html){
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  return tmp.textContent.replace(/\s+/g, ' ').trim();
+}
+
+// ===================== SUBMIT / GRADE =====================
+function gradeQuiz(auto){
+  stopTimer();
+
+  let correctCount = 0;
+  let s1c = 0, s2c = 0, s3c = 0;
+  const detailLines = [];
+
+  allQuestions.forEach(q => {
+    const kind = q.dataset.kind;
+    const verdictEl = q.querySelector('.verdict');
+    const qNumLabel = q.querySelector('.q-num').textContent.trim();
+    const sectionLabel = kind === 'choice' ? 'Section 1' : (kind === 's2' ? 'Section 2' : 'Section 3');
+
+    if(kind === 'choice'){
+      const correctAns = q.dataset.answer;
+      const checked = q.querySelector('input[type="radio"]:checked');
+      const questionText = stripHtml(q.querySelector('.q-text').innerHTML);
+      q.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+      if(!checked){
+        q.classList.add('unanswered');
+        const correctLabel = q.querySelector(`input[value="${correctAns}"]`).parentElement.textContent.trim();
+        verdictEl.textContent = 'Not answered — correct answer: ' + correctLabel;
+        detailLines.push(sectionLabel + ' ' + qNumLabel + ' — "' + questionText + '" — NOT ANSWERED (correct answer: ' + correctLabel + ')');
+        return;
+      }
+      const givenLabel = checked.parentElement.textContent.trim();
+      const ok = checked.value === correctAns;
+      if(ok){
+        correctCount++; s1c++; q.classList.add('correct'); verdictEl.textContent = 'Correct';
+        detailLines.push(sectionLabel + ' ' + qNumLabel + ' — "' + questionText + '" — CORRECT (answered: ' + givenLabel + ')');
+      } else{
+        q.classList.add('incorrect');
+        const correctLabel = q.querySelector(`input[value="${correctAns}"]`).parentElement.textContent.trim();
+        verdictEl.textContent = 'Incorrect — correct answer: ' + correctLabel;
+        detailLines.push(sectionLabel + ' ' + qNumLabel + ' — "' + questionText + '" — INCORRECT (answered: ' + givenLabel + ', correct: ' + correctLabel + ')');
+      }
+    }
+
+    else if(kind === 's2'){
+      const fullSentence = stripHtml(q.querySelector('.ar-full').innerHTML);
+      const selects = q.querySelectorAll('select');
+      const rows = q.querySelectorAll('.segment-row');
+      let allSegOk = true, anyUnanswered = false;
+      const segDetails = [];
+      rows.forEach((row, idx) => {
+        const sel = selects[idx];
+        const segAr = row.querySelector('.seg-ar').textContent.trim();
+        sel.disabled = true;
+        if(!sel.value){ anyUnanswered = true; allSegOk = false; segDetails.push(segAr + ': not tagged'); return; }
+        const givenTag = tagLabelsS2[sel.value] || sel.value;
+        const correctTag = tagLabelsS2[row.dataset.answer] || row.dataset.answer;
+        if(sel.value !== row.dataset.answer){
+          allSegOk = false;
+          segDetails.push(segAr + ': answered "' + givenTag + '", correct "' + correctTag + '"');
+        } else {
+          segDetails.push(segAr + ': "' + givenTag + '" (correct)');
+        }
+      });
+      let hiddenOk = true;
+      let hiddenNote = '';
+      if(q.dataset.hasHidden === '1'){
+        const input = q.querySelector('.hidden-faail-row input');
+        input.disabled = true;
+        const given = input.value.trim();
+        if(!given){ anyUnanswered = true; hiddenOk = false; hiddenNote = 'hidden Faa\'il: not answered (expected "' + q.dataset.hiddenExpected + '")'; }
+        else{
+          hiddenOk = normalizeWord(given) === normalizeWord(q.dataset.hiddenExpected);
+          hiddenNote = 'hidden Faa\'il: answered "' + given + '"' + (hiddenOk ? ' (correct)' : ', correct "' + q.dataset.hiddenExpected + '"');
+        }
+      }
+      const fullyCorrect = allSegOk && hiddenOk && !anyUnanswered;
+      const detailSuffix = segDetails.join('; ') + (hiddenNote ? '; ' + hiddenNote : '');
+      if(anyUnanswered){
+        q.classList.add('unanswered');
+        verdictEl.textContent = 'Not fully answered — review the segment roles above' + (q.dataset.hasHidden === '1' ? ' and the hidden Faa\'il box.' : '.');
+        detailLines.push(sectionLabel + ' ' + qNumLabel + ' — "' + fullSentence + '" — NOT FULLY ANSWERED [' + detailSuffix + ']');
+        return;
+      }
+      if(fullyCorrect){
+        correctCount++; s2c++; q.classList.add('correct'); verdictEl.textContent = 'Correct';
+        detailLines.push(sectionLabel + ' ' + qNumLabel + ' — "' + fullSentence + '" — CORRECT [' + detailSuffix + ']');
+      } else {
+        q.classList.add('incorrect');
+        let msg = 'Incorrect. ';
+        if(!allSegOk) msg += 'One or more segment roles were wrong. ';
+        if(!hiddenOk) msg += 'The hidden Faa\'il should have been "' + q.dataset.hiddenExpected + '".';
+        verdictEl.textContent = msg.trim();
+        detailLines.push(sectionLabel + ' ' + qNumLabel + ' — "' + fullSentence + '" — INCORRECT [' + detailSuffix + ']');
+      }
+    }
+
+    else if(kind === 's3'){
+      const fullSentence = stripHtml(q.querySelector('.ar-full').innerHTML);
+      const segments = q.querySelectorAll('.tag-segment');
+      let allSegOk = true, anyUnanswered = false;
+      const segDetails = [];
+      segments.forEach(seg => {
+        const label = seg.querySelector('.tag-segment-label').textContent.trim();
+        const checkboxes = seg.querySelectorAll('input[type="checkbox"]');
+        const givenLetters = Array.from(checkboxes).filter(c => c.checked).map(c => c.value).sort();
+        checkboxes.forEach(c => c.disabled = true);
+        const correctLetters = seg.dataset.answer.split(',');
+        if(givenLetters.length === 0){
+          anyUnanswered = true; allSegOk = false;
+          segDetails.push(label + ': not tagged (correct: ' + correctLetters.join(' & ') + ')');
+          return;
+        }
+        const ok = givenLetters.join(',') === correctLetters.join(',');
+        if(!ok) allSegOk = false;
+        segDetails.push(label + ': answered ' + givenLetters.join(' & ') + (ok ? ' (correct)' : ', correct ' + correctLetters.join(' & ')));
+      });
+      const fullyCorrect = allSegOk && !anyUnanswered;
+      if(anyUnanswered){
+        q.classList.add('unanswered');
+        verdictEl.textContent = 'Not fully answered — every chunk needs at least one letter selected.';
+        detailLines.push(sectionLabel + ' ' + qNumLabel + ' — "' + fullSentence + '" — NOT FULLY ANSWERED [' + segDetails.join('; ') + ']');
+        return;
+      }
+      if(fullyCorrect){
+        correctCount++; s3c++; q.classList.add('correct'); verdictEl.textContent = 'Correct';
+        detailLines.push(sectionLabel + ' ' + qNumLabel + ' — "' + fullSentence + '" — CORRECT [' + segDetails.join('; ') + ']');
+      } else {
+        q.classList.add('incorrect');
+        verdictEl.textContent = 'Incorrect — one or more chunks were tagged wrong. See the breakdown sent to your teacher, or ask them to review it with you.';
+        detailLines.push(sectionLabel + ' ' + qNumLabel + ' — "' + fullSentence + '" — INCORRECT [' + segDetails.join('; ') + ']');
+      }
+    }
+  });
+
+  const name = document.getElementById('studentName').value.trim();
+  const pct = Math.round((correctCount / TOTAL_SCORED) * 100);
+  const greetingBase = name ? ('Result — ' + name) : 'Result';
+  document.getElementById('scoreGreeting').textContent = auto ? (greetingBase + ' (time expired)') : greetingBase;
+  document.getElementById('scoreBig').textContent = correctCount + ' / ' + TOTAL_SCORED;
+
+  const g = gradeFor(pct);
+  document.getElementById('gradeBadge').textContent = g.letter;
+  document.getElementById('gradeComment').textContent = g.comment;
+
+  document.getElementById('scoreBreakdown').innerHTML =
+    'Score: ' + pct + '%<br>' +
+    'Section 1 (True/False): ' + s1c + ' / ' + section1.length + '<br>' +
+    'Section 2 (Fi\'l/Faa\'il/Maf\'ool): ' + s2c + ' / ' + section2.length + '<br>' +
+    'Section 3 (Full Sentence Analysis): ' + s3c + ' / ' + section3.length;
+
+  sendResultToTeacher({
+    quiz: "Dream Series Quiz #3 — Fi'l, Faa'il, Maf'ool & Sentence Analysis",
+    student_name: name || '(no name entered)',
+    score: correctCount + ' / ' + TOTAL_SCORED,
+    percentage: pct + '%',
+    grade: g.letter,
+    section_1_true_false: s1c + ' / ' + section1.length,
+    section_2_feil_faail_mafool: s2c + ' / ' + section2.length,
+    section_3_sentence_analysis: s3c + ' / ' + section3.length,
+    time_status: auto ? 'Auto-submitted (time expired)' : 'Submitted manually',
+    submitted_at: new Date().toLocaleString(),
+    question_by_question: detailLines.join('\n')
+  });
+
+  document.getElementById('wrap').classList.add('submitted');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+// ===================== TIMER =====================
+let remainingSeconds = TIME_LIMIT_SECONDS;
+let timerInterval = null;
+function formatTime(totalSeconds){
+  const m = Math.floor(totalSeconds / 60);
+  const s = totalSeconds % 60;
+  return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+function updateTimerDisplay(){
+  const clockEl = document.getElementById('timerClock');
+  const barEl = document.getElementById('timerBar');
+  clockEl.textContent = formatTime(remainingSeconds);
+  if(remainingSeconds <= 60) barEl.classList.add('low');
+}
+function startTimer(){
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    remainingSeconds--;
+    if(remainingSeconds <= 0){
+      remainingSeconds = 0; updateTimerDisplay(); stopTimer(); gradeQuiz(true); return;
+    }
+    updateTimerDisplay();
+  }, 1000);
+}
+function stopTimer(){ if(timerInterval){ clearInterval(timerInterval); timerInterval = null; } }
+
+// -------- Access window gate --------
+const IST_FORMAT_OPTS = {
+  timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', year: 'numeric',
+  hour: 'numeric', minute: '2-digit', hour12: true
+};
+function formatIST(date){
+  return date.toLocaleString('en-IN', IST_FORMAT_OPTS) + ' IST';
+}
+function formatCountdown(ms){
+  let totalSeconds = Math.max(0, Math.floor(ms / 1000));
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+  return String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+
+function setWindowBanner(){
+  const openAt = new Date(QUIZ_OPEN_AT);
+  const closeAt = new Date(QUIZ_CLOSE_AT);
+  const dateOpts = { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', year: 'numeric' };
+  const timeOpts = { timeZone: 'Asia/Kolkata', hour: 'numeric', minute: '2-digit', hour12: true };
+  const openDateStr = openAt.toLocaleDateString('en-IN', dateOpts);
+  const closeDateStr = closeAt.toLocaleDateString('en-IN', dateOpts);
+  const openTimeStr = openAt.toLocaleTimeString('en-IN', timeOpts);
+  const closeTimeStr = closeAt.toLocaleTimeString('en-IN', timeOpts);
+
+  let bannerText;
+  if(openDateStr === closeDateStr){
+    bannerText = 'This exam is available only on ' + openDateStr + ', from ' + openTimeStr + ' to ' + closeTimeStr + ' IST.';
+  } else {
+    bannerText = 'This exam is available only from ' + openDateStr + ' ' + openTimeStr + ' to ' + closeDateStr + ' ' + closeTimeStr + ' IST.';
+  }
+  document.getElementById('windowBanner').textContent = bannerText;
+  document.getElementById('timerCloseNote').textContent = 'Exam window closes at ' + closeTimeStr + ' IST on ' + closeDateStr;
+}
+setWindowBanner();
+
+let quizStarted = false;
+let gateInterval = null;
+
+function tryStartQuiz(){
+  if(quizStarted) return;
+  quizStarted = true;
+  document.getElementById('wrap').classList.remove('gate-locked');
+  renderStep();
+  startTimer();
+}
+
+function checkAccessWindow(){
+  if(quizStarted) return;
+  const now = new Date();
+  const openAt = new Date(QUIZ_OPEN_AT);
+  const closeAt = new Date(QUIZ_CLOSE_AT);
+
+  if(now < openAt){
+    document.getElementById('wrap').classList.add('gate-locked');
+    document.getElementById('gateHeading').textContent = 'This exam is not open yet';
+    document.getElementById('gateSub').textContent = 'It opens on ' + formatIST(openAt) + ' and closes on ' + formatIST(closeAt) + '.';
+    document.getElementById('gateCountdown').textContent = 'Opens in ' + formatCountdown(openAt - now);
+  } else if(now > closeAt){
+    document.getElementById('wrap').classList.add('gate-locked');
+    document.getElementById('gateHeading').textContent = 'This exam is now closed';
+    document.getElementById('gateSub').textContent = 'It was open from ' + formatIST(openAt) + ' to ' + formatIST(closeAt) + '.';
+    document.getElementById('gateCountdown').textContent = '';
+    if(gateInterval){ clearInterval(gateInterval); gateInterval = null; }
+  } else {
+    if(gateInterval){ clearInterval(gateInterval); gateInterval = null; }
+    tryStartQuiz();
+  }
+}
+
+checkAccessWindow();
+if(!quizStarted){ gateInterval = setInterval(checkAccessWindow, 1000); }
+</script>
+</body>
+</html>
