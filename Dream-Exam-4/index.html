@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dream Series Quiz #4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #EFE8D6;
+    --paper-raised: #F7F2E4;
+    --ink: #1B2A3A;
+    --ink-soft: #4A5568;
+    --rule: #C9BC9C;
+    --leather: #8C5A2B;
+    --leather-deep: #6E4420;
+    --good: #3E6B52;
+    --good-bg: #E3EBE1;
+    --bad: #9A3B32;
+    --bad-bg: #F1E2DE;
+    --arabic: 'Scheherazade New', 'Amiri', serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--paper);
+    background-image:
+      radial-gradient(ellipse at top left, rgba(140,90,43,0.06), transparent 45%),
+      radial-gradient(ellipse at bottom right, rgba(140,90,43,0.05), transparent 50%);
+    color: var(--ink);
+    font-family: 'Spectral', serif;
+    line-height: 1.55;
+    padding: 0 0 110px 0;
+  }
+  .wrap{ max-width: 700px; margin: 0 auto; padding: 48px 24px 24px; }
+  header.masthead{
+    text-align: left; border-bottom: 3px double var(--leather); padding-bottom: 22px; margin-bottom: 24px;
+  }
+  header.masthead h1{ font-family: 'Amiri', serif; font-weight: 700; font-size: 2.1rem; margin: 0 0 6px 0; letter-spacing: 0.2px; }
+  header.masthead p.sub{ margin: 0; color: var(--ink-soft); font-style: italic; font-size: 1.02rem; }
+  .name-row{ margin-top: 22px; display:flex; align-items:baseline; gap:10px; flex-wrap: wrap; }
+  .name-row label{ font-size: 0.95rem; color: var(--ink-soft); }
+  .name-row input{
+    flex: 1; min-width: 200px; background: transparent; border: none; border-bottom: 1.5px solid var(--rule);
+    font-family: 'Spectral', serif; font-size: 1.05rem; padding: 4px 2px; color: var(--ink);
+  }
+  .name-row input:focus{ outline: none; border-bottom-color: var(--leather); }
+
+  .timer-bar{
+    position: sticky; top: 0; z-index: 10;
+    display: flex; align-items: baseline; justify-content: center; gap: 10px;
+    background: var(--paper-raised); border: 1.5px solid var(--leather); border-radius: 4px;
+    padding: 8px 16px; margin-top: 18px;
+  }
+  .wrap.submitted .timer-bar{ display: none; }
+  .timer-label{ font-size: 0.85rem; color: var(--ink-soft); font-style: italic; }
+  .timer-clock{ font-family: 'Amiri', serif; font-weight: 700; font-size: 1.3rem; color: var(--leather-deep); letter-spacing: 0.5px; }
+  .timer-bar.low .timer-clock{ color: var(--bad); }
+  .timer-bar.low{ border-color: var(--bad); animation: pulse 1s infinite; }
+  @keyframes pulse{ 0%,100%{ opacity: 1; } 50%{ opacity: 0.65; } }
+
+  /* Progress bar */
+  .progress-wrap{ margin-top: 14px; }
+  .wrap.submitted .progress-wrap{ display: none; }
+  .progress-meta{
+    display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--ink-soft); margin-bottom: 6px;
+  }
+  .progress-track{
+    width: 100%; height: 9px; background: var(--rule); border-radius: 5px; overflow: hidden;
+  }
+  .progress-fill{
+    height: 100%; background: var(--leather); width: 0%; border-radius: 5px;
+    transition: width 0.35s ease;
+  }
+
+  .section-title{ font-family: 'Amiri', serif; font-size: 1.3rem; font-weight: 700; margin: 30px 0 4px 0; color: var(--leather-deep); }
+  .section-instructions{ font-size: 0.92rem; color: var(--ink-soft); margin: 0 0 14px 0; font-style: italic; }
+
+  .quiz-section{ display: none; }
+  .quiz-section.active{ display: block; }
+
+  .q{ display: none; padding: 8px 4px 4px; }
+  .q.active-step{ display: block; animation: fadeIn 0.25s ease; }
+  @keyframes fadeIn{ from{ opacity: 0; transform: translateY(4px); } to{ opacity: 1; transform: translateY(0); } }
+
+  .q-card{
+    background: var(--paper-raised); border: 1px solid var(--rule); border-radius: 6px; padding: 22px 22px 18px;
+  }
+  .q-num{ font-family: 'Amiri', serif; font-weight: 700; color: var(--leather); font-size: 1.05rem; margin-bottom: 8px; }
+  .q-body{ min-width: 0; }
+  .q-text{ font-size: 1.08rem; margin: 0 0 16px 0; }
+  .q-text .ar{ font-family: var(--arabic); font-size: 1.35rem; line-height: 1.9; }
+  .choices{ display: flex; gap: 22px; flex-wrap: wrap; }
+  .choice{
+    display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 1.02rem;
+    border: 1.5px solid var(--rule); border-radius: 5px; padding: 10px 16px; background: var(--paper);
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .choice:hover{ border-color: var(--leather); }
+  .choice input{ accent-color: var(--leather); width: 17px; height: 17px; cursor: pointer; }
+  .choice.picked{ border-color: var(--leather); background: #EFE2CC; }
+
+  .verdict{ display: none; margin-top: 14px; font-size: 0.9rem; padding: 8px 11px; border-radius: 3px; }
+  .q.correct .q-card{ background: var(--good-bg); }
+  .q.incorrect .q-card{ background: var(--bad-bg); }
+  .q.correct .verdict{ display: block; color: var(--good); }
+  .q.incorrect .verdict{ display: block; color: var(--bad); }
+  .q.unanswered .verdict{ display: block; color: var(--bad); }
+
+  /* Nav bar */
+  .nav-bar{
+    position: sticky; bottom: 0; background: var(--paper); border-top: 2px solid var(--leather);
+    padding: 14px 24px; margin-top: 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .wrap.submitted .nav-bar{ display: none; }
+  .nav-btn{
+    font-family: 'Spectral', serif; font-size: 0.98rem; padding: 10px 22px; border-radius: 3px; cursor: pointer;
+    border: 1.5px solid var(--leather);
+  }
+  .nav-btn.next{ background: var(--leather); color: var(--paper-raised); border: none; }
+  .nav-btn.next:hover{ background: var(--leather-deep); }
+  .nav-btn.back{ background: transparent; color: var(--leather-deep); }
+  .nav-btn.back:hover{ background: rgba(140,90,43,0.08); }
+  .nav-btn:disabled{ opacity: 0.4; cursor: not-allowed; }
+  .nav-count{ font-size: 0.88rem; color: var(--ink-soft); text-align: center; }
+  .status-link{
+    font-family: 'Spectral', serif; background: transparent; border: none; cursor: pointer;
+    color: var(--leather-deep); font-size: 0.88rem; text-align: center; text-decoration: underline;
+    text-underline-offset: 3px; padding: 4px 6px;
+  }
+  .status-link:hover{ color: var(--leather); }
+
+  /* Result screen */
+  .score-card{
+    display: none; background: var(--paper-raised); border: 1.5px solid var(--leather); border-radius: 6px;
+    padding: 30px 28px; margin-bottom: 34px; text-align: left;
+  }
+  .wrap.submitted .score-card{ display: block; }
+  .score-top{ display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-bottom: 6px; }
+  .grade-badge{
+    font-family: 'Amiri', serif; font-weight: 700; font-size: 2.4rem; color: var(--paper-raised);
+    background: var(--leather); border-radius: 50%; width: 84px; height: 84px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    border: 3px solid var(--leather-deep);
+  }
+  .score-headline h2{ font-family: 'Amiri', serif; margin: 0 0 4px 0; font-size: 1.5rem; }
+  .score-headline .big{ font-size: 1.9rem; font-weight: 700; color: var(--leather); font-family: 'Amiri', serif; }
+  .grade-comment{
+    margin-top: 14px; font-size: 0.98rem; background: var(--paper); border-left: 3px solid var(--leather);
+    padding: 10px 14px; border-radius: 2px; font-style: italic;
+  }
+  .breakdown{ margin-top: 14px; font-size: 0.95rem; color: var(--ink-soft); }
+  .result-actions{ margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .print-btn{
+    background: transparent; border: 1.5px solid var(--leather); color: var(--leather-deep);
+    font-family: 'Spectral', serif; padding: 9px 18px; border-radius: 3px; cursor: pointer; font-size: 0.92rem;
+  }
+  .print-btn:hover{ background: rgba(140,90,43,0.08); }
+  .sent-note{ margin-top: 14px; font-style: italic; font-size: 0.9rem; color: var(--ink-soft); }
+
+  @media print{
+    .timer-bar, .progress-wrap, .nav-bar, .quiz-section, .print-btn{ display: none !important; }
+    body{ background: white; padding: 0; }
+    .score-card{ display: block !important; border: none; }
+  }
+
+  @media (max-width: 480px){
+    .wrap{ padding: 32px 16px 20px; }
+    header.masthead h1{ font-size: 1.6rem; }
+    .q-card{ padding: 16px; }
+    .grade-badge{ width: 68px; height: 68px; font-size: 1.9rem; }
+  }
+
+  /* Access window gate */
+  #accessGate{ display: none; }
+  .wrap.gate-locked #accessGate{ display: block; }
+  .wrap.gate-locked .timer-bar,
+  .wrap.gate-locked .progress-wrap,
+  .wrap.gate-locked .nav-bar,
+  .wrap.gate-locked .quiz-section,
+  .wrap.gate-locked .score-card{ display: none !important; }
+  .gate-card{
+    background: var(--paper-raised); border: 1.5px solid var(--leather); border-radius: 6px;
+    padding: 36px 30px; text-align: center; margin-top: 10px;
+  }
+  .gate-card h2{ font-family: 'Amiri', serif; font-size: 1.5rem; margin: 0 0 10px 0; color: var(--leather-deep); }
+  .gate-card p{ margin: 6px 0; font-size: 1.02rem; }
+  .gate-countdown{
+    font-family: 'Amiri', serif; font-weight: 700; font-size: 1.8rem; color: var(--leather);
+    margin-top: 14px; letter-spacing: 0.5px;
+  }
+
+  .window-banner{
+    font-weight: 700; font-size: 0.98rem; text-align: center; color: var(--leather-deep);
+    background: var(--paper-raised); border: 1.5px solid var(--leather); border-radius: 4px;
+    padding: 10px 16px; margin-top: 18px;
+  }
+  .wrap.submitted .window-banner{ display: none; }
+  .wrap.submitted .quiz-section{ display: none !important; }
+  .timer-bar{ flex-wrap: wrap; row-gap: 4px; }
+  #timerCloseNote{ width: 100%; text-align: center; font-size: 0.8rem; }
+
+  /* Review overlay */
+  .review-overlay{
+    display: none; position: fixed; inset: 0; background: rgba(27,42,58,0.55);
+    z-index: 100; align-items: center; justify-content: center; padding: 20px;
+  }
+  .review-overlay.open{ display: flex; }
+  .review-panel{
+    background: var(--paper); border: 2px solid var(--leather); border-radius: 8px;
+    padding: 26px 26px 22px; max-width: 480px; width: 100%; max-height: 85vh; overflow-y: auto;
+  }
+  .review-panel h2{ font-family: 'Amiri', serif; font-size: 1.35rem; margin: 0 0 6px 0; color: var(--leather-deep); }
+  .review-panel p{ margin: 0 0 16px 0; font-size: 0.95rem; color: var(--ink-soft); }
+  .review-grid{
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 8px; margin-bottom: 16px;
+  }
+  .review-cell{
+    aspect-ratio: 1; border-radius: 5px; display: flex; align-items: center; justify-content: center;
+    font-family: 'Spectral', serif; font-weight: 600; font-size: 0.9rem; cursor: pointer; border: none;
+    color: var(--paper-raised); transition: transform 0.15s ease;
+  }
+  .review-cell:hover{ transform: scale(1.08); }
+  .review-cell.answered{ background: var(--good); }
+  .review-cell.unanswered{ background: var(--bad); }
+  .review-legend{ display: flex; gap: 18px; font-size: 0.85rem; color: var(--ink-soft); margin-bottom: 20px; align-items: center; }
+  .legend-dot{ display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 5px; vertical-align: middle; }
+  .legend-dot.answered{ background: var(--good); }
+  .legend-dot.unanswered{ background: var(--bad); }
+  .review-actions{ display: flex; gap: 12px; flex-wrap: wrap; justify-content: flex-end; }
+
+  .vocab-hint{ display:block; font-size: 0.82rem; color: var(--ink-soft); font-style: italic; margin-top: 4px; }
+  .choices{ row-gap: 10px; }
+  .choice{ flex: 1 1 260px; }
+</style>
+</head>
+<body>
+<div class="wrap" id="wrap">
+  <div class="wrap-inner">
+    <header class="masthead">
+      <h1>Dream Series Quiz #4</h1>
+      <p class="sub">Nightmare Exam Part 4 — Matching &amp; Translation — 39 questions</p>
+      <div class="name-row">
+        <label for="studentName">Name: <span style="color:var(--bad);">*</span></label>
+        <input type="text" id="studentName" placeholder="type your name here" required>
+      </div>
+    </header>
+
+    <div class="window-banner" id="windowBanner"></div>
+
+    <div class="gate-card" id="accessGate">
+      <h2 id="gateHeading">This exam is not open yet</h2>
+      <p id="gateSub"></p>
+      <div class="gate-countdown" id="gateCountdown"></div>
+    </div>
+
+    <div class="timer-bar" id="timerBar">
+      <span class="timer-label">Time remaining</span>
+      <span class="timer-clock" id="timerClock">39:00</span>
+      <span class="timer-label" id="timerCloseNote"></span>
+    </div>
+
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-meta">
+        <span id="progressQuestionLabel">Question 1 of 39</span>
+        <span id="progressPercentLabel">0%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <div class="score-card" id="scoreCard">
+      <div class="score-top">
+        <div class="grade-badge" id="gradeBadge">–</div>
+        <div class="score-headline">
+          <h2 id="scoreGreeting">Result</h2>
+          <div class="big" id="scoreBig">0 / 39</div>
+        </div>
+      </div>
+      <div class="grade-comment" id="gradeComment"></div>
+      <div class="breakdown" id="scoreBreakdown"></div>
+      <div class="result-actions">
+        <button class="print-btn" id="printBtn">Print / Save as PDF</button>
+      </div>
+      <div class="sent-note">Your result has also been sent to your teacher.</div>
+    </div>
+
+    <div class="quiz-section" data-section="1">
+      <div class="section-title">Section 1 — Match the Meaning</div>
+      <p class="section-instructions">The Muslim Match Finder: read each Arabic sentence and choose the English translation (or comment) that fits it best. One answer each.</p>
+      <div id="section1"></div>
+    </div>
+
+    <div class="quiz-section" data-section="2">
+      <div class="section-title">Section 2 — Translate</div>
+      <p class="section-instructions">Translate each Arabic sentence by choosing the best English rendering. A few sentences can be translated more than one good way — any option marked correct will be accepted.</p>
+      <div id="section2"></div>
+    </div>
+  </div>
+
+  <div class="nav-bar" id="navBar">
+    <button class="nav-btn back" id="backBtn">Back</button>
+    <div class="nav-count"><button class="status-link" id="statusLink" type="button">Question 1 / 39 · Answer Status</button></div>
+    <button class="nav-btn next" id="nextBtn">Next</button>
+  </div>
+</div>
+
+<div class="review-overlay" id="reviewOverlay">
+  <div class="review-panel">
+    <h2>Review your answers</h2>
+    <p id="reviewSummary"></p>
+    <div class="review-grid" id="reviewGrid"></div>
+    <div class="review-legend">
+      <span class="legend-dot answered"></span> Answered
+      <span class="legend-dot unanswered"></span> Not answered
+    </div>
+    <div class="review-actions">
+      <button class="nav-btn back" id="reviewBackBtn">Go back &amp; review</button>
+      <button class="nav-btn next" id="reviewSubmitBtn">Submit Final Answers</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// -------- Data --------
+// Section 1: each question has 4 options; "c" marks the correct one.
+const section1 = [
+  {ar:'لَيْسَ الرَّجُلُ مُسْلِمًا', opts:[
+    {t:'The man was a Muslim.'}, {t:'The man is not a Muslim.', c:1}, {t:'The man is a Muslim.'}, {t:'Is the man not a Muslim, really?'}
+  ]},
+  {ar:'لَيْسَ الرَّجُلُ المُسْلِمُ', opts:[
+    {t:'The man is not a Muslim.'}, {t:'Certainly the Muslim man is….'}, {t:"The Muslim man isn't…", c:1}, {t:"The man, he isn't a Muslim."}
+  ]},
+  {ar:'إِنَّ الرَّجُلَ المُسْلِمَ', opts:[
+    {t:"The Muslim man isn't…"}, {t:'He is the Muslim man.'}, {t:"Certainly, the man isn't a Muslim."}, {t:'Certainly the Muslim man is….', c:1}
+  ]},
+  {ar:'كَانَ الرَّجُلُ مُسْلِمًا', opts:[
+    {t:'The man is a Muslim.'}, {t:'The Muslim man was…'}, {t:'The man was a Muslim.', c:1}, {t:'The man is not a Muslim.'}
+  ]},
+  {ar:'الرَّجُلُ مُسْلِمٌ', opts:[
+    {t:'He is a Muslim man.'}, {t:'The man was a Muslim.'}, {t:'The man, he is THE Muslim!'}, {t:'The man is a Muslim.', c:1}
+  ]},
+  {ar:'الرَّجُلُ لَيْسَ مُسْلِمًا', opts:[
+    {t:"Certainly, the man isn't a Muslim."}, {t:"The man, he isn't a Muslim.", c:1}, {t:'The man is not a Muslim.'}, {t:"No, the man isn't a Muslim at all!"}
+  ]},
+  {ar:'إِنَّ الرَّجُلَ لَيْسَ مُسْلِمًا', opts:[
+    {t:"The man, he isn't a Muslim."}, {t:'Certainly the Muslim man is….'}, {t:"Certainly, the man isn't a Muslim.", c:1}, {t:'The man is not a Muslim.'}
+  ]},
+  {ar:'هُوَ الرَّجُلُ المُسْلِمُ', opts:[
+    {t:'The man is a Muslim.'}, {t:'He is a Muslim man.'}, {t:'The man, he is THE Muslim!'}, {t:'He is the Muslim man.', c:1}
+  ]},
+  {ar:'لَيْسَ الرَّجُلُ مُسْلِمًا', opts:[
+    {t:"No, the man isn't a Muslim at all!"}, {t:'The man is not a Muslim.', c:1}, {t:'The man was a Muslim.'}, {t:'Is the man not a Muslim, really?'}
+  ]},
+  {ar:'ما الرَّجُلُ مُسْلِمٌ', opts:[
+    {t:'The man is a Muslim.'}, {t:'Is the man not a Muslim, really?'}, {t:"No, the man isn't a Muslim at all!"}, {t:'The man is not a Muslim.', c:1}
+  ]},
+  {ar:'أَلَيْسَ الرَّجُلُ بِمُسْلِمٍ', opts:[
+    {t:'The man is not a Muslim.'}, {t:'Is the man not a Muslim, really?', c:1}, {t:"No, the man isn't a Muslim at all!"}, {t:"The man, he isn't a Muslim."}
+  ]},
+  {ar:'هُوَ رَجُلٌ مُسْلِمٌ', opts:[
+    {t:'He is the Muslim man.'}, {t:'The man is a Muslim.'}, {t:'He is a Muslim man.', c:1}, {t:'He is the Muslim.'}
+  ]},
+  {ar:'ما الرَّجُلُ بِمُسْلِمٍ', opts:[
+    {t:'Is the man not a Muslim, really?'}, {t:'The man is not a Muslim.'}, {t:"No, the man isn't a Muslim at all!", c:1}, {t:"The man, he isn't a Muslim."}
+  ]},
+  {ar:'الرَّجُلُ هُوَ المُسْلِمُ', opts:[
+    {t:'He is the Muslim man.'}, {t:"The man, he isn't a Muslim."}, {t:'The man is a Muslim.'}, {t:'The man, he is THE Muslim!', c:1}
+  ]},
+  {ar:'لَيْسُوا مُسْلِمِينَ', opts:[
+    {t:"The women aren't Muslims."}, {t:'They certainly are Muslims.'}, {t:"They aren't Muslims.", c:1}, {t:'We are not Muslims.'}
+  ]},
+  {ar:'لَيسَتِ النِّساءُ مُسْلِماتٍ', opts:[
+    {t:"The women, they're not Muslims."}, {t:'The women are Muslims.'}, {t:"They aren't Muslims."}, {t:"The women aren't Muslims.", c:1}
+  ]},
+  {ar:'النِّساءُ لَسْنَ مُسْلِماتٍ', opts:[
+    {t:"The women aren't Muslims."}, {t:"The women, they're not Muslims.", c:1}, {t:"They aren't Muslims."}, {t:'The women are Muslims.'}
+  ]},
+  {ar:'إِنَّهُنَّ مُسْلِماتٌ', opts:[
+    {t:'They are Muslims.'}, {t:"The women aren't Muslims."}, {t:'They certainly are Muslim women.', c:1}, {t:'We are both Muslim women.'}
+  ]},
+  {ar:'نَحْنُ مُسْلِمَتانِ', opts:[
+    {t:'They certainly are Muslim women.'}, {t:'I am a Muslim woman.'}, {t:"The women aren't Muslims."}, {t:'We are both Muslim women.', c:1}
+  ]}
+];
+
+// Section 2: each question has 4 options; any option with c:1 counts as correct.
+// "p":1 marks the preferred phrasing when more than one option is correct.
+const section2 = [
+  {ar:'عِنْدَ الرَّجُلِ كِتَابٌ', opts:[
+    {t:'The man is with the book.'}, {t:'The man has a book.', c:1, p:1}, {t:'The book is with the man.', c:1}, {t:'The man had a book.'}
+  ]},
+  {ar:'لَهُ كِتَابٌ', opts:[
+    {t:'She has a book.'}, {t:'He had a book.'}, {t:'He has a book.', c:1}, {t:'The book is his.'}
+  ]},
+  {ar:'لِي أَخٌ', opts:[
+    {t:'He has a brother.'}, {t:'I have a brother.', c:1}, {t:'I have a book.'}, {t:'I had a brother.'}
+  ]},
+  {ar:'لَها أَخَوَانِ', opts:[
+    {t:'She has a brother.'}, {t:'They have two brothers.'}, {t:'She has two sisters.'}, {t:'She has two brothers.', c:1}
+  ]},
+  {ar:'عِنْدَها كِتَابٌ', opts:[
+    {t:'He has a book.'}, {t:'She has a book.', c:1, p:1}, {t:'The book is with her.', c:1}, {t:'She had a book.'}
+  ]},
+  {ar:'فِي القُرْآنِ هُدًى', opts:[
+    {t:'The Qur\u2019an is guidance.'}, {t:'There is guidance in the Qur\u2019an.', c:1, p:1}, {t:'In the Qur\u2019an is guidance.', c:1}, {t:'He has guidance in the Qur\u2019an.'}
+  ]},
+  {ar:'إِنَّ فِي هَذَا الكِتَابِ ذِكْرًا', opts:[
+    {t:'There is no reminder in this book.'}, {t:'Certainly this book is a reminder.'}, {t:'Certainly there is a reminder in this book.', c:1}, {t:'There is a reminder in this book.'}
+  ]},
+  {ar:'أَخٌ لَهُ', note:'All four options below are acceptable English renderings of this one.', opts:[
+    {t:'A brother of him.', c:1}, {t:'A brother to him.', c:1}, {t:'A brother of his.', c:1}, {t:'A brother he has.', c:1}
+  ]},
+  {ar:'لَهُ أَخٌ', opts:[
+    {t:'She has a brother.'}, {t:'He has two brothers.'}, {t:'He had a brother.'}, {t:'He has a brother.', c:1}
+  ]},
+  {ar:'عِنْدَهُ عِلْمُ السَّاعَةِ', opts:[
+    {t:'He has some knowledge of the hour.'}, {t:'Only he has the knowledge of the hour.', c:1}, {t:'The knowledge of the hour is only with him.', c:1}, {t:'The hour has knowledge of him.'}
+  ]},
+  {ar:'لِلَّهِ العِزَّةُ', vocab:'العِزَّة = authority, respect', opts:[
+    {t:'The authority belongs to the man.'}, {t:'Only Allah has the authority.', c:1}, {t:'Allah has some authority.'}, {t:'The authority belongs only to Allah.', c:1}
+  ]},
+  {ar:'لَهُ مُلْكُ السَّماواتِ والأَرْضِ', vocab:'مُلْك = kingdom', opts:[
+    {t:'He belongs to the kingdom of the heavens and the earth.'}, {t:'The kingdom of the heavens and the earth belongs only to him.', c:1}, {t:'He has some kingdom in the heavens and the earth.'}, {t:'The heavens and the earth belong to the kingdom.'}
+  ]},
+  {ar:'اللهُ خَالِقُ كُلِّ شَيْءٍ', opts:[
+    {t:'Everything is the creator of Allah.'}, {t:'Allah is the owner of each and every thing.'}, {t:'Allah is the creator of each and every thing.', c:1}, {t:'Allah created some things.'}
+  ]},
+  {ar:'الرَّحْمٰنُ عَلَّمَ القُرْآنَ', opts:[
+    {t:'The Qur\u2019an taught the most merciful.'}, {t:'The most merciful, he taught the Qur\u2019an.', c:1}, {t:'The most merciful will teach the Qur\u2019an.'}, {t:'The most merciful, he learned the Qur\u2019an.'}
+  ]},
+  {ar:'إِيَّاهُ نَسْتَغْفِرُ', opts:[
+    {t:'We forgive him.'}, {t:'He seeks forgiveness from us.'}, {t:'We seek forgiveness only from him.', c:1}, {t:'We seek forgiveness from ourselves.'}
+  ]},
+  {ar:'يَعْبُدُونَنِي', opts:[
+    {t:'I worship them.'}, {t:'They worship me.', c:1}, {t:'They worshipped me.'}, {t:'They worship him.'}
+  ]},
+  {ar:'إِنَّ الشِّرْكَ لَظُلْمٌ عَظِيمٌ', vocab:'ظُلْمٌ عَظِيمٌ = a great injustice', opts:[
+    {t:'Associating partners is not an injustice.'}, {t:'Indeed, injustice is a great partnership.'}, {t:'Associating partners is a small mistake.'}, {t:'Indeed, associating partners is for sure a great injustice.', c:1}
+  ]},
+  {ar:'لٰكِنَّهُمْ فِي رَيْبٍ', opts:[
+    {t:'They are, however, without doubt.'}, {t:'However, they are in doubt.', c:1}, {t:'However, we are in doubt.'}, {t:'However, they are certain.'}
+  ]},
+  {ar:'مِنْ رَسُولِ اللهِ هذا', opts:[
+    {t:'This messenger of Allah.'}, {t:'To this messenger of Allah.'}, {t:'From this messenger of Allah.', c:1}, {t:'This is from the messenger of Allah.'}
+  ]},
+  {ar:'الَّذِي خَلَقَكَ', opts:[
+    {t:'The one whom you created.'}, {t:'The one who created you.', c:1}, {t:'The one who will create you.'}, {t:'The one who created me.'}
+  ]}
+];
+
+const TOTAL = section1.length + section2.length;
+const TIME_LIMIT_SECONDS = TOTAL * 60;
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mdeovjqv';
+
+// ============================================================
+// ACCESS WINDOW — edit these two lines to schedule the exam.
+// Time zone is fixed to Asia/Kolkata (IST, UTC+5:30) — the "+05:30"
+// at the end makes that fixed regardless of the student's own device.
+// Format: "YYYY-MM-DDTHH:MM:SS+05:30"  (24-hour clock)
+// ============================================================
+const QUIZ_OPEN_AT  = "2026-09-14T09:00:00+05:30";
+const QUIZ_CLOSE_AT = "2026-09-21T23:59:00+05:30";
+// ============================================================
+
+function sendResultToTeacher(payload){
+  fetch(FORMSPREE_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify(payload)
+  }).catch(err => console.error('Could not send result to teacher:', err));
+}
+
+// -------- Build questions --------
+const LETTERS = ['A','B','C','D','E','F'];
+
+function buildSection(container, items, prefix){
+  const el = document.getElementById(container);
+  items.forEach((item, i) => {
+    const num = i + 1;
+    const name = prefix + num;
+    const correctLetters = [];
+    let preferredLetter = null;
+    const choicesHtml = item.opts.map((opt, idx) => {
+      const letter = LETTERS[idx];
+      if(opt.c){ correctLetters.push(letter); }
+      if(opt.p){ preferredLetter = letter; }
+      return `<label class="choice"><input type="radio" name="${name}" value="${letter}"> ${opt.t}</label>`;
+    }).join('');
+    const vocabHtml = item.vocab ? `<span class="vocab-hint">${item.vocab}</span>` : '';
+    const noteHtml = item.note ? `<span class="vocab-hint">${item.note}</span>` : '';
+    const div = document.createElement('div');
+    div.className = 'q';
+    div.dataset.correct = correctLetters.join(',');
+    div.dataset.preferred = preferredLetter || '';
+    div.dataset.name = name;
+    div.innerHTML = `
+      <div class="q-card">
+        <div class="q-num">Question ${num}</div>
+        <div class="q-body">
+          <p class="q-text"><span class="ar">${item.ar}</span>${vocabHtml}${noteHtml}</p>
+          <div class="choices">${choicesHtml}</div>
+          <div class="verdict"></div>
+        </div>
+      </div>
+    `;
+    el.appendChild(div);
+  });
+}
+buildSection('section1', section1, 's1q');
+buildSection('section2', section2, 's2q');
+
+// highlight picked choice visually
+document.getElementById('wrap').addEventListener('change', (e) => {
+  if(e.target.matches('input[type="radio"]')){
+    const q = e.target.closest('.q');
+    q.querySelectorAll('.choice').forEach(c => c.classList.remove('picked'));
+    e.target.closest('.choice').classList.add('picked');
+  }
+});
+
+// -------- Stepper --------
+const allQuestions = Array.from(document.querySelectorAll('.q'));
+const quizSections = Array.from(document.querySelectorAll('.quiz-section'));
+let current = 0;
+
+function sectionForQuestion(qEl){
+  return quizSections.find(sec => sec.contains(qEl));
+}
+
+function renderStep(){
+  allQuestions.forEach((q, i) => q.classList.toggle('active-step', i === current));
+  quizSections.forEach(sec => sec.classList.toggle('active', sec.contains(allQuestions[current])));
+
+  document.getElementById('backBtn').disabled = current === 0;
+  document.getElementById('nextBtn').textContent = (current === allQuestions.length - 1) ? 'Submit' : 'Next';
+  document.getElementById('statusLink').textContent = 'Question ' + (current + 1) + ' / ' + allQuestions.length + ' · Answer Status';
+
+  document.getElementById('progressQuestionLabel').textContent = 'Question ' + (current + 1) + ' of ' + allQuestions.length;
+  updateProgressBar();
+}
+
+function countAnswered(){
+  return document.querySelectorAll('.q input[type="radio"]:checked').length;
+}
+function isChoiceAnswered(q){
+  return !!q.querySelector('input[type="radio"]:checked');
+}
+function updateProgressBar(){
+  const answered = countAnswered();
+  const pct = Math.round((answered / TOTAL) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPercentLabel').textContent = pct + '% answered';
+}
+
+document.getElementById('backBtn').addEventListener('click', () => {
+  if(current > 0){ current--; renderStep(); window.scrollTo({top:0, behavior:'smooth'}); }
+});
+document.getElementById('nextBtn').addEventListener('click', () => {
+  const nameVal = document.getElementById('studentName').value.trim();
+  if(!nameVal){
+    alert('Please enter your name before continuing.');
+    document.getElementById('studentName').focus();
+    return;
+  }
+  if(current < allQuestions.length - 1){
+    current++;
+    renderStep();
+    window.scrollTo({top:0, behavior:'smooth'});
+  } else {
+    openReviewOverlay();
+  }
+});
+
+// -------- Review grid overlay --------
+function buildReviewGrid(){
+  const grid = document.getElementById('reviewGrid');
+  grid.innerHTML = '';
+  allQuestions.forEach((q, i) => {
+    const cell = document.createElement('button');
+    cell.className = 'review-cell';
+    cell.type = 'button';
+    cell.textContent = (i + 1);
+    cell.addEventListener('click', () => {
+      current = i;
+      renderStep();
+      closeReviewOverlay();
+      window.scrollTo({top:0, behavior:'smooth'});
+    });
+    grid.appendChild(cell);
+  });
+}
+buildReviewGrid();
+
+function openReviewOverlay(){
+  const cells = document.querySelectorAll('.review-cell');
+  let answeredCount = 0;
+  allQuestions.forEach((q, i) => {
+    const answered = isChoiceAnswered(q);
+    cells[i].classList.toggle('answered', answered);
+    cells[i].classList.toggle('unanswered', !answered);
+    if(answered) answeredCount++;
+  });
+  const unansweredCount = allQuestions.length - answeredCount;
+  document.getElementById('reviewSummary').textContent = unansweredCount > 0
+    ? (answeredCount + ' of ' + allQuestions.length + ' answered — ' + unansweredCount + ' question' + (unansweredCount === 1 ? '' : 's') + ' still need' + (unansweredCount === 1 ? 's' : '') + ' an answer. Tap a red square to jump straight to it.')
+    : 'All ' + allQuestions.length + ' questions answered. Ready to submit.';
+  document.getElementById('reviewOverlay').classList.add('open');
+}
+function closeReviewOverlay(){
+  document.getElementById('reviewOverlay').classList.remove('open');
+}
+document.getElementById('reviewBackBtn').addEventListener('click', () => {
+  const firstUnanswered = allQuestions.findIndex(q => !isChoiceAnswered(q));
+  if(firstUnanswered !== -1){ current = firstUnanswered; renderStep(); }
+  closeReviewOverlay();
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+document.getElementById('reviewSubmitBtn').addEventListener('click', () => {
+  const nameVal = document.getElementById('studentName').value.trim();
+  if(!nameVal){
+    alert('Please enter your name before submitting.');
+    closeReviewOverlay();
+    document.getElementById('studentName').focus();
+    return;
+  }
+  closeReviewOverlay();
+  gradeQuiz(false);
+});
+document.getElementById('statusLink').addEventListener('click', () => openReviewOverlay());
+
+document.getElementById('wrap').addEventListener('change', updateProgressBar);
+
+// -------- Grade badge helpers --------
+function gradeFor(pct){
+  if(pct >= 90) return {letter:'A+', comment:'Outstanding work — this section is very solid.'};
+  if(pct >= 80) return {letter:'A', comment:'Excellent work overall, with just a few gaps to tidy up.'};
+  if(pct >= 70) return {letter:'B', comment:'Good grasp of the material — a bit more review will sharpen it further.'};
+  if(pct >= 60) return {letter:'C', comment:'A fair attempt — worth going back over the material before the next check.'};
+  if(pct >= 50) return {letter:'D', comment:'Some real gaps here — recommend a focused review session.'};
+  return {letter:'F', comment:'This needs another pass through the material — best to review with your teacher.'};
+}
+
+function stripHtml(html){
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  return tmp.textContent.replace(/\s+/g, ' ').trim();
+}
+
+function textForLetter(q, letter){
+  const choice = q.querySelector(`input[value="${letter}"]`);
+  return choice ? choice.parentElement.textContent.trim() : '';
+}
+
+// -------- Submit / grade --------
+function gradeQuiz(auto){
+  stopTimer();
+
+  let correctCount = 0;
+  let s1correct = 0, s2correct = 0;
+  const detailLines = [];
+
+  allQuestions.forEach(q => {
+    const name = q.dataset.name;
+    const correctLetters = q.dataset.correct.split(',').filter(Boolean);
+    const preferredLetter = q.dataset.preferred;
+    const checked = q.querySelector('input[type="radio"]:checked');
+    const verdictEl = q.querySelector('.verdict');
+    const qNumLabel = q.querySelector('.q-num').textContent.trim();
+    const sectionLabel = name.startsWith('s1') ? 'Section 1' : 'Section 2';
+    const questionText = stripHtml(q.querySelector('.q-text').innerHTML);
+    q.querySelectorAll('input[type="radio"]').forEach(r => r.disabled = true);
+
+    const correctLabels = correctLetters.map(l => textForLetter(q, l)).join(' / ');
+
+    if(!checked){
+      q.classList.add('unanswered');
+      verdictEl.textContent = 'Not answered — correct answer: ' + correctLabels;
+      detailLines.push(sectionLabel + ' ' + qNumLabel + ' — "' + questionText + '" — NOT ANSWERED (correct answer: ' + correctLabels + ')');
+      return;
+    }
+    const givenLabel = checked.parentElement.textContent.trim();
+    const isCorrect = correctLetters.includes(checked.value);
+    if(isCorrect){
+      correctCount++;
+      if(name.startsWith('s1')) s1correct++; else s2correct++;
+      q.classList.add('correct');
+      if(preferredLetter && checked.value !== preferredLetter){
+        verdictEl.textContent = 'Correct — though "' + textForLetter(q, preferredLetter) + '" is the more natural phrasing.';
+      } else {
+        verdictEl.textContent = 'Correct';
+      }
+      detailLines.push(sectionLabel + ' ' + qNumLabel + ' — "' + questionText + '" — CORRECT (answered: ' + givenLabel + ')');
+    } else {
+      q.classList.add('incorrect');
+      verdictEl.textContent = 'Incorrect — correct answer: ' + correctLabels;
+      detailLines.push(sectionLabel + ' ' + qNumLabel + ' — "' + questionText + '" — INCORRECT (answered: ' + givenLabel + ', correct: ' + correctLabels + ')');
+    }
+  });
+
+  const name = document.getElementById('studentName').value.trim();
+  const pct = Math.round((correctCount / TOTAL) * 100);
+  const greetingBase = name ? ('Result — ' + name) : 'Result';
+  document.getElementById('scoreGreeting').textContent = auto ? (greetingBase + ' (time expired)') : greetingBase;
+  document.getElementById('scoreBig').textContent = correctCount + ' / ' + TOTAL;
+
+  const g = gradeFor(pct);
+  document.getElementById('gradeBadge').textContent = g.letter;
+  document.getElementById('gradeComment').textContent = g.comment;
+
+  document.getElementById('scoreBreakdown').innerHTML =
+    'Score: ' + pct + '%<br>' +
+    'Section 1 (Match the Meaning): ' + s1correct + ' / ' + section1.length + '<br>' +
+    'Section 2 (Translate): ' + s2correct + ' / ' + section2.length;
+
+  sendResultToTeacher({
+    quiz: "Dream Series Quiz #4 — Matching & Translation",
+    student_name: name || '(no name entered)',
+    score: correctCount + ' / ' + TOTAL,
+    percentage: pct + '%',
+    grade: g.letter,
+    section_1_matching: s1correct + ' / ' + section1.length,
+    section_2_translate: s2correct + ' / ' + section2.length,
+    time_status: auto ? 'Auto-submitted (time expired)' : 'Submitted manually',
+    submitted_at: new Date().toLocaleString(),
+    question_by_question: detailLines.join('\n')
+  });
+
+  document.getElementById('wrap').classList.add('submitted');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+// -------- Timer --------
+let remainingSeconds = TIME_LIMIT_SECONDS;
+let timerInterval = null;
+function formatTime(totalSeconds){
+  const m = Math.floor(totalSeconds / 60);
+  const s = totalSeconds % 60;
+  return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+function updateTimerDisplay(){
+  const clockEl = document.getElementById('timerClock');
+  const barEl = document.getElementById('timerBar');
+  clockEl.textContent = formatTime(remainingSeconds);
+  if(remainingSeconds <= 60) barEl.classList.add('low');
+}
+function startTimer(){
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    remainingSeconds--;
+    if(remainingSeconds <= 0){
+      remainingSeconds = 0;
+      updateTimerDisplay();
+      stopTimer();
+      gradeQuiz(true);
+      return;
+    }
+    updateTimerDisplay();
+  }, 1000);
+}
+function stopTimer(){
+  if(timerInterval){ clearInterval(timerInterval); timerInterval = null; }
+}
+
+// -------- Access window gate --------
+const IST_FORMAT_OPTS = {
+  timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', year: 'numeric',
+  hour: 'numeric', minute: '2-digit', hour12: true
+};
+function formatIST(date){
+  return date.toLocaleString('en-IN', IST_FORMAT_OPTS) + ' IST';
+}
+function formatCountdown(ms){
+  let totalSeconds = Math.max(0, Math.floor(ms / 1000));
+  const h = Math.floor(totalSeconds / 3600);
+  const m = Math.floor((totalSeconds % 3600) / 60);
+  const s = totalSeconds % 60;
+  return String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+
+function setWindowBanner(){
+  const openAt = new Date(QUIZ_OPEN_AT);
+  const closeAt = new Date(QUIZ_CLOSE_AT);
+  const dateOpts = { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', year: 'numeric' };
+  const timeOpts = { timeZone: 'Asia/Kolkata', hour: 'numeric', minute: '2-digit', hour12: true };
+  const openDateStr = openAt.toLocaleDateString('en-IN', dateOpts);
+  const closeDateStr = closeAt.toLocaleDateString('en-IN', dateOpts);
+  const openTimeStr = openAt.toLocaleTimeString('en-IN', timeOpts);
+  const closeTimeStr = closeAt.toLocaleTimeString('en-IN', timeOpts);
+
+  let bannerText;
+  if(openDateStr === closeDateStr){
+    bannerText = 'This exam is available only on ' + openDateStr + ', from ' + openTimeStr + ' to ' + closeTimeStr + ' IST.';
+  } else {
+    bannerText = 'This exam is available only from ' + openDateStr + ' ' + openTimeStr + ' to ' + closeDateStr + ' ' + closeTimeStr + ' IST.';
+  }
+  document.getElementById('windowBanner').textContent = bannerText;
+  document.getElementById('timerCloseNote').textContent = 'Exam window closes at ' + closeTimeStr + ' IST on ' + closeDateStr;
+}
+setWindowBanner();
+
+let quizStarted = false;
+let gateInterval = null;
+
+function tryStartQuiz(){
+  if(quizStarted) return;
+  quizStarted = true;
+  document.getElementById('wrap').classList.remove('gate-locked');
+  renderStep();
+  startTimer();
+}
+
+function checkAccessWindow(){
+  if(quizStarted) return;
+  const now = new Date();
+  const openAt = new Date(QUIZ_OPEN_AT);
+  const closeAt = new Date(QUIZ_CLOSE_AT);
+
+  if(now < openAt){
+    document.getElementById('wrap').classList.add('gate-locked');
+    document.getElementById('gateHeading').textContent = 'This exam is not open yet';
+    document.getElementById('gateSub').textContent = 'It opens on ' + formatIST(openAt) + ' and closes on ' + formatIST(closeAt) + '.';
+    document.getElementById('gateCountdown').textContent = 'Opens in ' + formatCountdown(openAt - now);
+  } else if(now > closeAt){
+    document.getElementById('wrap').classList.add('gate-locked');
+    document.getElementById('gateHeading').textContent = 'This exam is now closed';
+    document.getElementById('gateSub').textContent = 'It was open from ' + formatIST(openAt) + ' to ' + formatIST(closeAt) + '.';
+    document.getElementById('gateCountdown').textContent = '';
+    if(gateInterval){ clearInterval(gateInterval); gateInterval = null; }
+  } else {
+    if(gateInterval){ clearInterval(gateInterval); gateInterval = null; }
+    tryStartQuiz();
+  }
+}
+
+checkAccessWindow();
+if(!quizStarted){ gateInterval = setInterval(checkAccessWindow, 1000); }
+</script>
+</body>
+</html>
